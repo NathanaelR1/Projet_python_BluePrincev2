@@ -30,6 +30,7 @@ class Board:
         self.pioche_initial = copy.deepcopy(catalogue_des_pieces.pioche)
         self.mode = "exploration"
         self.direction_pour_placement = None
+        self.direction_opposee = None
         
         
 
@@ -86,18 +87,27 @@ class Board:
         piece_actuelle = self.grille[self.ligne_joueur][self.colonne_joueur]
         if self.direction is None:
             return
-    
+        
         ligne = self.ligne_joueur
         colonne = self.colonne_joueur
     
+        direction_opposee = self.direction_opposee
+    
         if self.direction == "haut":
             ligne -= 1
+            direction_opposee = "bas"
+            
         elif self.direction == "bas":
             ligne += 1
+            direction_opposee = "haut"
+            
         elif self.direction == "gauche":
             colonne -= 1
+            direction_opposee = "droite"
+            
         elif self.direction == "droite":
             colonne += 1
+            direction_opposee = "gauche"
     
         # Vérification des bornes de la grille
         if not (0 <= ligne < 9 and 0 <= colonne < 5):
@@ -110,6 +120,10 @@ class Board:
        
 
         if self.grille[ligne][colonne] is not None:
+            if self.grille[ligne][colonne].portes[direction_opposee] == False:
+                print("La porte est bloquée")
+                return
+            
             self.ligne_joueur = ligne
             self.colonne_joueur = colonne
             print(f"Le joueur s’est déplacé en ({ligne}, {colonne})")
