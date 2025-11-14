@@ -31,7 +31,8 @@ class Board:
         self.mode = "exploration"
         self.direction_pour_placement = None
         self.direction_opposee = None
-        
+        self.message = ""
+       
         
 
     def selectionner_direction(self, direction):
@@ -115,17 +116,18 @@ class Board:
             return
         
         if piece_actuelle.portes[self.direction] == False:
-            print("Pas de porte ici!")
+            self.message = "Pas de porte ici"
             return
        
 
         if self.grille[ligne][colonne] is not None:
             if self.grille[ligne][colonne].portes[direction_opposee] == False:
-                print("La porte est bloquée")
+                self.message = "La porte est bloquée"
                 return
             
             self.ligne_joueur = ligne
             self.colonne_joueur = colonne
+            self.message = ""
             print(f"Le joueur s’est déplacé en ({ligne}, {colonne})")
 
         else:
@@ -285,8 +287,10 @@ class Board:
                 piece.tourner_la_piece("horaire")
                 piece.tourner_la_piece("horaire")
             
-        
-                
+            
+            
+            
+                    
             
                 
 

@@ -27,7 +27,7 @@ class Assets:
         if cle in self.pieces:
             return self.pieces[cle]
     
-        img = pygame.image.load(piece.image).convert_alpha()
+        img = pygame.image.load(piece.image).convert()
         img = pygame.transform.smoothscale(img, target_size)
     
         if angle !=  0:

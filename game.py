@@ -57,11 +57,11 @@ class Game:
                 
         x_joueur = self.board.colonne_joueur * taille_case
         y_joueur = self.board.ligne_joueur * taille_case
-        pygame.draw.rect(self.screen, (255, 255, 255), (x_joueur, y_joueur, taille_case, taille_case), 3)
+        pygame.draw.rect(self.screen, (255, 255, 255), (x_joueur , y_joueur , taille_case, taille_case), 2)
         
 
         if self.direction_ui is not None:
-            marge = 4  
+            marge = 2  
             epaisseur = 3
         
             if self.direction_ui == "haut":
@@ -71,8 +71,8 @@ class Game:
                                  epaisseur)
             elif self.direction_ui == "bas":
                 pygame.draw.line(self.screen, (255,255,255),
-                                 (x_joueur + marge, y_joueur + taille_case - marge),
-                                 (x_joueur + taille_case - marge, y_joueur + taille_case - marge),
+                                 (x_joueur + marge, y_joueur + taille_case - marge - 1),
+                                 (x_joueur + taille_case - marge, y_joueur + taille_case - marge - 1),
                                  epaisseur)
             elif self.direction_ui == "gauche":
                 pygame.draw.line(self.screen, (255,255,255),
@@ -81,9 +81,10 @@ class Game:
                                  epaisseur)
             elif self.direction_ui == "droite":
                 pygame.draw.line(self.screen, (255,255,255),
-                                 (x_joueur + taille_case - marge, y_joueur + marge),
-                                 (x_joueur + taille_case - marge, y_joueur + taille_case - marge),
+                                 (x_joueur + taille_case - marge - 1, y_joueur + marge),
+                                 (x_joueur + taille_case - marge - 1, y_joueur + taille_case - marge),
                                  epaisseur)
+            
 
 
     
@@ -101,16 +102,54 @@ class Game:
         hauteur = 1080
         
         pygame.draw.rect(self.screen, (255,255,255),(depart_x,depart_y,largeur,hauteur))
+    
+        if self.board.mode == "exploration":
+            nom_piece_actuelle = pygame.font.Font(None, 30)
+            nom_piece_actuelle = nom_piece_actuelle.render(self.board.grille[self.board.ligne_joueur][self.board.colonne_joueur].nom, True, (0, 0, 0))
+            self.screen.blit(nom_piece_actuelle, (450, 375))
         
+        texte_inventaire = pygame.font.Font(None, 30)
+        texte_inventaire = texte_inventaire.render("Inventaire :", True, (0, 0, 0))
+        self.screen.blit(texte_inventaire, (450, 50))
+        
+        img_pas = pygame.image.load("assets/Inventaire/Steps1.png").convert()
+        img_pas = pygame.transform.scale(img_pas, (25,25))
+        self.screen.blit(img_pas, ( 1200, 80))
+        
+        img_pas = pygame.image.load("assets/Inventaire/Gold.png")
+        img_pas = pygame.transform.scale(img_pas, (25,25))
+        self.screen.blit(img_pas, ( 1200, 120))
+        
+        img_pas = pygame.image.load("assets/Inventaire/Gem.png")
+        img_pas = pygame.transform.scale(img_pas, (25,25))
+        self.screen.blit(img_pas, ( 1200, 160))
+        
+        img_pas = pygame.image.load("assets/Inventaire/Key.png")
+        img_pas = pygame.transform.scale(img_pas, (25,25))
+        self.screen.blit(img_pas, ( 1200, 200))
+        
+        img_pas = pygame.image.load("assets/Inventaire/Ivory_dice.png").convert()
+        img_pas = pygame.transform.scale(img_pas, (25,25))
+        self.screen.blit(img_pas, ( 1200, 240))
+ 
+        if self.board.message:
+            font_message = pygame.font.Font(None, 30)  
+            texte_message = font_message.render(self.board.message, True, (0, 0, 0))  
+            self.screen.blit(texte_message, (450, 680))  
+                
         
         #tirage du bas affichage
         if self.board.tirage_en_cours:
-            y_img = 450
+            font_choix = pygame.font.Font(None, 30)  
+            texte_choix = font_choix.render("Choisie une pièce à placer", True, (0, 0, 0))  
+            self.screen.blit(texte_choix, (450, 375))  
+            
+            y_img = 425
             for i, room in enumerate(self.board.tirage_en_cours):
                 img = self.assets.charger_image_piece(room,2)
                 if img:
                     #img_redim = pygame.transform.scale(img, (128, 128))
-                    x_img = 500 + i * 150
+                    x_img = 500 + i * 170
                     #self.screen.blit(img_redim, (x_img, y_img))
                     self.screen.blit(img, (x_img, y_img))
         
@@ -121,7 +160,8 @@ class Game:
                     # nom de la pièce en dessous
                     font = pygame.font.Font(None, 24)
                     text = font.render(room.nom, True, (0, 0, 0))
-                    self.screen.blit(text, (x_img, y_img + 130))
+                    self.screen.blit(text, (x_img, y_img + 135))
+                    
 
         
                 

@@ -106,7 +106,7 @@ BilliardRoom = Piece(
 )
 
 Gallery = Piece(
-    nom = "allery",
+    nom = "Gallery",
     image = "assets/rooms/Gallery.png",  
     portes={"haut": True,"droite": False,"bas": True,"gauche": False},
     cout_gemmes = 0,
@@ -164,6 +164,72 @@ StoreRoom = Piece(
     objets = ["cle","gemme","or"],
     effet = None,
     rarete = COMMONPLACE,
+)
+
+Nook = Piece(
+    nom = "Nook",
+    image = "assets/rooms/Nook_icon.png",  
+    portes={"haut": False,"droite": False,"bas": True,"gauche": True},
+    cout_gemmes = 0,
+    objets = ['cle'],
+    effet = None,
+    rarete = COMMONPLACE,
+)
+
+Garage = Piece(
+    nom = "Garage",
+    image = "assets/rooms/Garage.png",  
+    portes={"haut": False,"droite": False,"bas": True,"gauche": False},
+    cout_gemmes = 1,
+    objets = ["cle","cle", "cle"],
+    effet = None,
+    rarete = UNUSUAL,
+    condition = "uniquement entre la ligne 4 et 8, colonne 0 et 1 via une porte gauche ou haut"
+)
+
+MusicRoom = Piece(
+    nom = "Music Room",
+    image = "assets/rooms/Music_Room_Icon.png",  
+    portes={"haut": False,"droite": False,"bas": True,"gauche": True},
+    cout_gemmes = 2,
+    objets = ["cle"],
+    effet = None,
+    rarete = UNUSUAL,
+    
+)
+
+LockerRoom = Piece(
+    nom = "Locker Room",
+    image = "assets/rooms/Locker_Room_Icon.png",  
+    portes={"haut": True,"droite": False,"bas": True,"gauche": False},
+    cout_gemmes = 1,
+    objets = ["cle"],
+    effet = None, #eparpille des cle dans le manoir?
+    rarete = RARE,
+    condition = "avoir placer pool"
+    
+)
+
+Den = Piece(
+    nom = "Den",
+    image = "assets/rooms/Den_Icon.png",  
+    portes={"haut": False,"droite": True,"bas": True,"gauche": True},
+    cout_gemmes = 0,
+    objets = ["gemme"],
+    effet = None,
+    rarete = COMMONPLACE,
+    
+)
+
+WineCellar = Piece(
+    nom = "Wine Cellar",
+    image = "assets/rooms/Wine_Cellar_Icon.png",  
+    portes={"haut": False,"droite": False,"bas": True,"gauche": False},
+    cout_gemmes = 0,
+    objets = ["gemme","gemme","gemme"],
+    effet = None,
+    rarete = UNUSUAL,
+    
 )
 
 catalogue = [
