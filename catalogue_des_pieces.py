@@ -690,6 +690,19 @@ WestWingHall = Piece(
     
 )
 
+EastWingHall = Piece(
+    nom = "East Wing Hall",
+    image = "assets/rooms/East_Wing_Hall_Icon.png",  
+    portes={"haut": False,"droite": True,"bas": True,"gauche": True},
+    type_de_piece= "Hallway",
+    cout_gemmes = 0,
+    objets = [],
+    effet = None,
+    rarete = UNUSUAL,
+    condition = "colonne 3 a 5"
+    
+)
+
 Corridor = Piece(
     nom = "Corridor",
     image = "assets/rooms/Corridor_Icon.png",  
@@ -1073,7 +1086,7 @@ pioche = [
     Bedroom, Boudoir, GuestBedroom,
     Nursery, ServantsQuarters, BunkRoom,
     HerLadyshipChamber, MasterBedroom, Hallway,
-    WestWingHall, Corridor, Passageway,
+    WestWingHall,EastWingHall, Corridor, Passageway,
     SecretPassage, Foyer, GreatHall,
     Terrace, Patio, Courtyard,
     Cloister, Veranda, GreenHouse,
