@@ -115,22 +115,42 @@ class Game:
         img_pas = pygame.image.load("assets/Inventaire/Steps1.png").convert()
         img_pas = pygame.transform.scale(img_pas, (25,25))
         self.screen.blit(img_pas, ( 1200, 80))
+
+        texte_pas = pygame.font.Font(None, 30)
+        texte_pas = texte_pas.render(f"{self.joueur.inventaire["Pas"]["nombre"]}", True, (0, 0, 0))
+        self.screen.blit(texte_pas, (1240, 80))
         
-        img_pas = pygame.image.load("assets/Inventaire/Gold.png")
-        img_pas = pygame.transform.scale(img_pas, (25,25))
-        self.screen.blit(img_pas, ( 1200, 120))
+        img_gold = pygame.image.load("assets/Inventaire/Gold.png")
+        img_gold = pygame.transform.scale(img_gold, (25,25))
+        self.screen.blit(img_gold, ( 1200, 120))
+
+        texte_gold = pygame.font.Font(None, 30)
+        texte_gold = texte_gold.render(f"{self.joueur.inventaire["or"]["nombre"]}", True, (0, 0, 0))
+        self.screen.blit(texte_gold, (1240, 120))
         
-        img_pas = pygame.image.load("assets/Inventaire/Gem.png")
-        img_pas = pygame.transform.scale(img_pas, (25,25))
-        self.screen.blit(img_pas, ( 1200, 160))
+        img_gem = pygame.image.load("assets/Inventaire/Gem.png")
+        img_gem = pygame.transform.scale(img_gem, (25,25))
+        self.screen.blit(img_gem, ( 1200, 160))
+
+        texte_gem = pygame.font.Font(None, 30)
+        texte_gem = texte_gem.render(f"{self.joueur.inventaire["gemme"]["nombre"]}", True, (0, 0, 0))
+        self.screen.blit(texte_gem, (1240, 160))
         
-        img_pas = pygame.image.load("assets/Inventaire/Key.png")
-        img_pas = pygame.transform.scale(img_pas, (25,25))
-        self.screen.blit(img_pas, ( 1200, 200))
+        img_key = pygame.image.load("assets/Inventaire/Key.png")
+        img_key = pygame.transform.scale(img_key, (25,25))
+        self.screen.blit(img_key, ( 1200, 200))
+
+        texte_key = pygame.font.Font(None, 30)
+        texte_key = texte_key.render(f"{self.joueur.inventaire["cle"]["nombre"]}", True, (0, 0, 0))
+        self.screen.blit(texte_key, (1240, 200))
         
-        img_pas = pygame.image.load("assets/Inventaire/Ivory_dice.png").convert()
-        img_pas = pygame.transform.scale(img_pas, (25,25))
-        self.screen.blit(img_pas, ( 1200, 240))
+        img_dice = pygame.image.load("assets/Inventaire/Ivory_dice.png").convert()
+        img_dice = pygame.transform.scale(img_dice, (25,25))
+        self.screen.blit(img_dice, ( 1200, 240))
+
+        texte_dice = pygame.font.Font(None, 30)
+        texte_dice = texte_dice.render(f"{self.joueur.inventaire["des"]["nombre"]}", True, (0, 0, 0))
+        self.screen.blit(texte_dice, (1240, 240))
  
         if self.board.message:
             font_message = pygame.font.Font(None, 30)  
@@ -200,7 +220,7 @@ class Game:
                             #en commentaire pour l'instant j'utilise pas se deplacer
                             #self.board.se_deplacer(self.joueur)
                         elif event.key == pygame.K_SPACE:
-                            self.board.se_deplacer()
+                            self.board.se_deplacer(self.joueur)
                             
         
                 
@@ -211,7 +231,7 @@ class Game:
                         elif event.key == pygame.K_RIGHT:
                             self.board.changer_selection_tirage("droite")
                         elif event.key == pygame.K_RETURN:  
-                            self.board.placer_piece_choisie()
+                            self.board.placer_piece_choisie(self.joueur)
                               
                     
 

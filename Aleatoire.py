@@ -1,28 +1,30 @@
 import random
-from Inventaire import cle, gemme, Nourriture, Joueur
+from Inventaire import Objets, Nourriture, Joueur
 
 def genere_obj():
-    "tire aléatoirement les objets qui seront présents dans la pièce"
+    """tire aléatoirement un objet"""
     obj_possibles = [
-        (cle("Cle"), 0.3),
-        (gemme("Gemmes"), 0.2),
-        (Nourriture("pomme"), 0.15),
-        (Nourriture("banane"), 0.1),
-        (Nourriture("gateau"), 0.02),
-        (Nourriture("sandwich"), 0.02),
-        (Nourriture("repas"), 0.01),
-        (None, 0.2)  # Rien dans la pièce
+        Objets("cle"),
+        Objets("gemme"),
+        Nourriture("pomme"),
+        Nourriture("banane"),
+        Nourriture("gateau"),
+        Nourriture("sandwich"),
+        Nourriture("repas"),
     ]
 
-    obj_generes=[]
-    for obj, proba in obj_possibles:
-        if random.random() < proba:
-            if obj != None: 
-                obj_generes.append(obj)
-    if None in obj_generes:
-        return []
-    else:
-        return obj_generes
+    probabilites = [
+        0.3,   # Cle
+        0.2,   # Gemmes
+        0.25,  # pomme
+        0.12,   # banane
+        0.07,  # gateau
+        0.05,  # sandwich
+        0.01,  # repas
+    ]
+
+    obj_genere= random.choices(obj_possibles, weights=probabilites, k=1)[0]
+    return obj_genere
     
 
 def tirer_pieces(grille,ligne,colonne):

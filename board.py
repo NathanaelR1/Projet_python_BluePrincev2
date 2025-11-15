@@ -77,7 +77,7 @@ class Board:
     #     joueur.utiliser_objet("Pas")
     #     self.direction = None
     
-    def se_deplacer(self):
+    def se_deplacer(self, joueur):
         """Déplace le joueur si la salle en face existe déjà.
         Gere les cas d'un mur, d'une porte fermer, d'une porte bloquer.
         Appelle la methode du tirage des pièces dans le cas ou on veut se déplacer dans
@@ -112,7 +112,7 @@ class Board:
     
         # Vérification des bornes de la grille
         if not (0 <= ligne < 9 and 0 <= colonne < 5):
-            print("Mur du manoir, impossible de bouger.")
+            self.message = "Mur du manoir, impossible de bouger."
             return
         
         if piece_actuelle.portes[self.direction] == False:
@@ -125,6 +125,7 @@ class Board:
                 self.message = "La porte est bloquée"
                 return
             
+            joueur.utiliser_objet("Pas")
             self.ligne_joueur = ligne
             self.colonne_joueur = colonne
             self.message = ""
@@ -194,7 +195,7 @@ class Board:
             
             
             
-    def placer_piece_choisie(self):
+    def placer_piece_choisie(self,joueur):
         """Place la pièce choisie sur la case cible et ré-initialise le tirage au moment
         du placement.
         Appeller dans game au moment de l'appui sur entrée.
@@ -205,7 +206,7 @@ class Board:
         piece_choisie = self.tirage_en_cours[self.selection_tirage]
         ligne, colonne = self.case_cible
         
-        #on eleve d'abord de la pioche la piece
+        #on enleve d'abord de la pioche la piece
         if piece_choisie in self.pioche_initial:
             self.pioche_initial.remove(piece_choisie)
         #puis on cree une copie qu'on va placer
@@ -224,6 +225,19 @@ class Board:
         self.case_cible = None
         self.direction_pour_placement = None
         print(f" Pièce '{piece_choisie.nom}' placée en ({ligne}, {colonne})")
+
+        obj_recup=[]
+        for obj in piece_choisie.objets:
+            if obj == "aleatoire":
+                obj_aleatoire=genere_obj()
+                joueur.ramasser_objet(obj_aleatoire)
+                obj_recup.append(obj_aleatoire.nom)
+
+            else:
+                joueur.ramasser_objet(Objets(obj))
+                obj_recup.append(obj)
+        self.message = "Objets récupérés : " + ", ".join(obj_recup)
+
     
         # Retour au mode exploration
         self.mode = "exploration"
