@@ -70,7 +70,7 @@ class Joueur:
 
     def add_inv(self, obj, quantite):
         """ajoute une quantite d'un objet à l'inventaire (retire si négatif)"""
-        
+
         if obj.nom not in self.__inventaire:
             self.__inventaire[obj.nom]= {"objet": obj , "nombre": 0}
 

@@ -1,7 +1,7 @@
 import random
 from Inventaire import Objets, Nourriture, Joueur
 
-def genere_obj():
+def genere_obj(joueur):
     """tire aléatoirement un objet"""
     obj_possibles = [
         Objets("cle"),
@@ -11,6 +11,7 @@ def genere_obj():
         Nourriture("gateau"),
         Nourriture("sandwich"),
         Nourriture("repas"),
+        Objets("lockpick")
     ]
 
     probabilites = [
@@ -21,9 +22,12 @@ def genere_obj():
         0.07,  # gateau
         0.05,  # sandwich
         0.01,  # repas
+        0.002  #lockpick kit
     ]
 
     obj_genere= random.choices(obj_possibles, weights=probabilites, k=1)[0]
+    if "lockpick" in joueur.inventaire and obj_genere.nom == "lockpick":
+        obj_genere = Nourriture("repas")
     return obj_genere
     
 

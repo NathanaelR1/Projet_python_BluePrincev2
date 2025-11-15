@@ -241,6 +241,8 @@ class Game:
             self.Partie_Salle()
             self.Partie_Inventaire()
             pygame.display.flip()
+            if self.joueur.inventaire["Pas"]==0:
+                running = False
             self.clock.tick(30)
 
         pygame.quit()

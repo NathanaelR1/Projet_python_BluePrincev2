@@ -3,7 +3,7 @@ import pygame
 import random
 import catalogue_des_pieces
 #fusion
-from Inventaire import Joueur,Objets
+from Inventaire import Joueur,Objets, Nourriture
 from Aleatoire import genere_obj, tirer_pieces
 import copy
 
@@ -228,15 +228,26 @@ class Board:
 
         obj_recup=[]
         for obj in piece_choisie.objets:
-            if obj == "aleatoire":
-                obj_aleatoire=genere_obj()
-                joueur.ramasser_objet(obj_aleatoire)
+            if obj[1] =="rd":
+                nombre_obj= random.randint(1,9)
+            else:
+                nombre_obj=obj[1]
+            
+            if obj[0] == "aleatoire":
+                for i in range(nombre_obj):
+                    obj_aleatoire=genere_obj(joueur)
+                    joueur.ramasser_objet(obj_aleatoire)
                 obj_recup.append(obj_aleatoire.nom)
 
             else:
-                joueur.ramasser_objet(Objets(obj))
-                obj_recup.append(obj)
-        self.message = "Objets récupérés : " + ", ".join(obj_recup)
+                if obj[0]=="pomme":
+                    joueur.ramasser_objet(Nourriture(obj[0]))
+                else:
+                    joueur.add_inv(Objets(obj[0]),nombre_obj)
+                obj_recup.append(obj[0])
+
+        if len(obj_recup)>0:
+            self.message = "Objets récupérés : " + ", ".join(obj_recup)
 
     
         # Retour au mode exploration
