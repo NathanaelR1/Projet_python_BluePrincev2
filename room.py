@@ -1,7 +1,7 @@
 import random
 
 class Piece:
-    def __init__(self, nom, image, portes, cout_gemmes=0, objets=None, effet=None, rarete=0, condition=None,
+    def __init__(self, nom, image, portes,type_de_piece, cout_gemmes=0, objets=None, effet=None, rarete=0, condition=None,
                  niveaux_portes=None):
         """
         Représente une pièce du manoir et défini toute ces caractéristique.
@@ -19,6 +19,7 @@ class Piece:
         self.nom = nom
         self.image = image
         self.portes = dict(portes)
+        self.type_de_piece = type_de_piece
         self.cout_gemmes = cout_gemmes
         self.objets = list(objets) if objets else []
         self.effet = effet
