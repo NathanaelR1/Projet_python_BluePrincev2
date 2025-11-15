@@ -9,11 +9,7 @@ RARE = 3
 EntranceHall = Piece(
     nom = "EntranceHall",
     image="assets/rooms/Entrancehall.png",  
-    portes={
-        "haut": True,       
-        "droite": True,   
-        "bas": False,
-        "gauche": True},
+    portes={"haut": True,"droite": True,"bas": False,"gauche": True},
     type_de_piece= "normal",
     cout_gemmes = 0,
     objets=[],
@@ -25,11 +21,7 @@ EntranceHall = Piece(
 Antechamber = Piece(
     nom = "Antechamber",
     image = "assets/rooms/Antechamber.png",  
-    portes={
-        "haut": False,       
-        "droite": True,   
-        "bas": True,
-        "gauche": True},
+    portes={"haut": True,"droite": True,"bas": True,"gauche": True},
     type_de_piece= "normal",
     cout_gemmes = 0,
     objets = [],
@@ -41,11 +33,7 @@ Antechamber = Piece(
 TheFondation = Piece(
     nom = "TheFondation",
     image = "assets/rooms/The_Foundation.png",  
-    portes={
-        "haut": False,       
-        "droite": True,   
-        "bas": True,
-        "gauche": True},
+    portes={"haut": False,"droite": True,"bas": True,"gauche": True},
     type_de_piece= "normal",
     cout_gemmes = 0,
     objets = [],
@@ -57,11 +45,7 @@ TheFondation = Piece(
 SpareRoom = Piece(
     nom = "SpareRoom",
     image = "assets/rooms/SpareRoom.png",  
-    portes={
-        "haut": True,       
-        "droite": False,   
-        "bas": True,
-        "gauche": False},
+    portes={"haut": True,"droite": False,"bas": True,"gauche": False},
     type_de_piece= "normal",
     cout_gemmes = 0,
     effet = None,
@@ -71,11 +55,7 @@ SpareRoom = Piece(
 Rotunda = Piece(
     nom = "Rotunda",
     image = "assets/rooms/Rotunda.png",  
-    portes={
-        "haut": False,       
-        "droite": False,   
-        "bas": True,
-        "gauche": True},
+    portes={"haut": False,"droite": False,"bas": True,"gauche": True},
     type_de_piece= "normal",
     cout_gemmes = 3,
     objets = [],
@@ -86,11 +66,7 @@ Rotunda = Piece(
 Parlor = Piece(
     nom = "Parlor",
     image = "assets/rooms/Parlor.png",  
-    portes={
-        "haut": False,       
-        "droite": False,   
-        "bas": True,
-        "gauche": True},
+    portes={"haut": False,"droite": False,"bas": True,"gauche": True},
     type_de_piece= "normal",
     cout_gemmes = 0,
     objets = ["puzzle"],
@@ -101,11 +77,7 @@ Parlor = Piece(
 BilliardRoom = Piece(
     nom = "BilliardRoom",
     image = "assets/rooms/Billiard_Room.png",  
-    portes={
-        "haut": False,       
-        "droite": False,   
-        "bas": True,
-        "gauche": True},
+    portes={"haut": False,"droite": False,"bas": True,"gauche": True},
     type_de_piece= "normal",
     cout_gemmes = 0,
     objets = ["puzzle"],
@@ -128,7 +100,7 @@ Gallery = Piece(
 Room8= Piece(
     nom = "Room8",
     image = "assets/rooms/Room_8.png",  
-    portes={"haut": False,"droite": False,"bas": True,"gauche": True},
+    portes={"haut": False,"droite": True,"bas": True,"gauche": False},
     type_de_piece= "normal",
     cout_gemmes = 0,
     objets = [],
@@ -145,6 +117,7 @@ Closet = Piece(
     objets = ["aleatoire","aleatoire"],
     effet = None,
     rarete = COMMONPLACE,
+    interactions = [{"type": "casier", "quantite": 2}]
 )
 
 WalkInCloset = Piece(
@@ -156,6 +129,7 @@ WalkInCloset = Piece(
     objets = ["aleatoire","aleatoire","aleatoire","aleatoire"],
     effet = None,
     rarete = STANDART,
+    interactions = [{"type": "casier", "quantite": 4}]
 )
 
 Attic = Piece(
@@ -167,17 +141,23 @@ Attic = Piece(
     objets = ["aleatoire","aleatoire","aleatoire","aleatoire"],
     effet = None,
     rarete = RARE,
+    interactions = [{"type": "coffre", "niveau": 1, "quantite": 2}]
 )
 
 StoreRoom = Piece(
     nom = "StoreRoom",
     image = "assets/rooms/StoreRoom.png",  
     portes={"haut": False,"droite": False,"bas": True,"gauche": False},
-    type_de_piece= "normal",
+    type_de_piece= "Shop",
     cout_gemmes = 0,
-    objets = ["cle","gemme","or"],
+    objets = [],
     effet = None,
     rarete = COMMONPLACE,
+    commerce = [
+        {"nom": "Gemme de réserve (+1)", "cout": 3, "gain": {"ressource": "Gemmes", "quantite": 1}},
+        {"nom": "Dé poussiéreux (+1)", "cout": 4, "gain": {"ressource": "Des", "quantite": 1}},
+        {"nom": "Pelle robuste", "cout": 8, "gain": {"ressource": "Pelle", "quantite": 1}},
+    ]
 )
 
 Nook = Piece(
@@ -237,6 +217,7 @@ Den = Piece(
     objets = ["gemme"],
     effet = None,
     rarete = COMMONPLACE,
+    interactions = [{"type": "coffre", "niveau": 1}]
     
 )
 
@@ -249,6 +230,7 @@ WineCellar = Piece(
     objets = ["gemme","gemme","gemme"],
     effet = None,
     rarete = UNUSUAL,
+    interactions = [{"type": "coffre", "niveau": 2}]
     
 )
 
@@ -282,9 +264,10 @@ Pantry = Piece(
     portes={"haut": False,"droite": False,"bas": True,"gauche": True},
     type_de_piece= "normal",
     cout_gemmes = 0,
-    objets = ["or","fruit"],#4 piece or et 1 fruit
+    objets = ["fruit"],#4 piece or et 1 fruit
     effet = None,
     rarete = COMMONPLACE,
+    or_total = 4
     
 )
 
@@ -294,9 +277,10 @@ RumpusRoom = Piece(
     portes={"haut": True,"droite": False,"bas": True,"gauche": False},
     type_de_piece= "normal",
     cout_gemmes = 1,
-    objets = ["or"],#8 piece d'or
+    objets = [],
     effet = None,
     rarete = STANDART,
+    or_total = 8
     
 )
 
@@ -306,9 +290,10 @@ Vault = Piece(
     portes={"haut": False,"droite": False,"bas": True,"gauche": False},
     type_de_piece= "normal",
     cout_gemmes = 3,
-    objets = ["or"],# 40 piece d'or
+    objets = [],
     effet = None,
     rarete = RARE,
+    or_total = 40
     
 )
 
@@ -319,7 +304,7 @@ Office = Piece(
     type_de_piece= "normal",
     cout_gemmes = 2,
     objets = ["or"],#aleatoirement gagne des pieces
-    effet = ["genere des pieces d'or dans le manoir dans les pieces deja placer"],
+    effet = {"type": "disperse", "ressource": "or", "quantite": 3},
     rarete = STANDART,
     
 )
@@ -327,7 +312,7 @@ Office = Piece(
 DrawingRoom = Piece(
     nom = "Drawing Room",
     image = "assets/rooms/Drawing_Room_Icon.png",  
-    portes={"haut": False,"droite": True,"bas": True,"gauche": False},
+    portes={"haut": False,"droite": True,"bas": True,"gauche": True},
     type_de_piece= "normal",
     cout_gemmes = 1,
     objets = [],
@@ -367,7 +352,19 @@ ChamberOfMirrors = Piece(
     type_de_piece= "normal",
     cout_gemmes = 0,
     objets = [],
-    effet = None,#ajoute une copie des pieces deja placer dans la pioche
+    effet = {"type": "ajout_pioche", "pieces": ["Mirror Room"]},
+    rarete = RARE,
+    
+)
+
+MirrorRoom = Piece(
+    nom = "Mirror Room",
+    image = "assets/rooms/Chamber_of_Mirrors_Icon.png",
+    portes={"haut": True,"droite": True,"bas": True,"gauche": True},
+    type_de_piece= "Special",
+    cout_gemmes = 0,
+    objets = [],
+    effet = {"type": "custom_message", "message": "Les reflets brouillent vos sens."},
     rarete = RARE,
     
 )
@@ -375,11 +372,11 @@ ChamberOfMirrors = Piece(
 ThePool = Piece(
     nom = "The Pool",
     image = "assets/rooms/The_Pool_Icon.png",  
-    portes={"haut": False,"droite": False,"bas": True,"gauche": False},
+    portes={"haut": False,"droite": True,"bas": True,"gauche": True},
     type_de_piece= "normal",
     cout_gemmes = 1,
     objets = [],
-    effet = None,#ajoute Locker room, sauna et pump room dans la pioche
+    effet = {"type": "ajout_pioche", "pieces": ["Locker Room", "Sauna", "Pump Room"]},
     rarete = STANDART,
     
 )
@@ -411,7 +408,7 @@ UtilityCloset = Piece(
 BoilerRoom = Piece(
     nom = "Boiler Room",
     image = "assets/rooms/Boiler_Room_Icon.png",  
-    portes={"haut": False,"droite": True,"bas": True,"gauche": True},
+    portes={"haut": True,"droite": False,"bas": True,"gauche": True},
     type_de_piece= "normal",
     cout_gemmes = 1,
     objets = [],#chance de trouver le detecteur de metal et la shovel
@@ -421,7 +418,7 @@ BoilerRoom = Piece(
 )
 
 PumpRoom = Piece(
-    nom = "Wine Cellar",
+    nom = "Pump Room",
     image = "assets/rooms/Pump_Room_Icon.png",  
     portes={"haut": False,"droite": False,"bas": True,"gauche": True},
     type_de_piece= "normal",
@@ -436,7 +433,7 @@ PumpRoom = Piece(
 Security = Piece(
     nom = "Security",
     image = "assets/rooms/Security_Icon.png",  
-    portes={"haut": False,"droite": False,"bas": True,"gauche": False},
+    portes={"haut": False,"droite": True,"bas": True,"gauche": True},
     type_de_piece= "normal",
     cout_gemmes = 1,
     objets = [],#aleatoirement des objets
@@ -453,6 +450,18 @@ Workshop = Piece(
     cout_gemmes = 0,
     objets = [],#un objet, 0-2 trou a creuser
     effet = None,
+    rarete = UNUSUAL,
+    
+)
+
+ClockworkRoom = Piece(
+    nom = "Clockwork Room",
+    image = "assets/rooms/Workshop_Icon.png",
+    portes={"haut": True,"droite": False,"bas": True,"gauche": False},
+    type_de_piece= "Special",
+    cout_gemmes = 0,
+    objets = [],
+    effet = {"type": "double_cost", "cout": 1},
     rarete = UNUSUAL,
     
 )
@@ -574,7 +583,7 @@ Bedroom = Piece(
     type_de_piece= "Bedroom",
     cout_gemmes = 0,
     objets = [],
-    effet = "pas",# 2 pas a chaque fois qu'on rentre dans cette piece
+    effet = {"type": "enter_resource", "ressource": "Pas", "quantite": 2, "message": "+2 pas dans la chambre"},
     rarete = COMMONPLACE,
     
 )
@@ -598,7 +607,7 @@ GuestBedroom = Piece(
     type_de_piece= "Bedroom",
     cout_gemmes = 0,
     objets = [],
-    effet = "pas",#10 pas
+    effet = {"type": "enter_resource", "ressource": "Pas", "quantite": 5, "message": "Repos dans la chambre d'amis"},
     rarete = COMMONPLACE,
     
 )
@@ -622,7 +631,7 @@ ServantsQuarters = Piece(
     type_de_piece= "Bedroom",
     cout_gemmes = 1,
     objets = [],
-    effet = "cle",#1 cle pour chaque bedroom placer
+    effet = {"type": "enter_resource", "ressource": "Cle", "quantite": 1, "message": "Les serviteurs partagent une clé"},
     rarete = UNUSUAL,
     
 )
@@ -658,7 +667,7 @@ MasterBedroom = Piece(
     type_de_piece= "Bedroom",
     cout_gemmes = 2,
     objets = ["gemme"],
-    effet = "pas", #1 pas pour chaque piece poser
+    effet = {"type": "draw_resource", "ressource": "Pas", "quantite": 3},
     rarete = RARE,
     
 )
@@ -784,7 +793,7 @@ Patio = Piece(
     type_de_piece= "Greenroom",
     cout_gemmes = 1,
     objets = [],
-    effet = None,#eparpille une gemme dans toute les green room
+    effet = {"type": "disperse", "ressource": "gemme", "quantite": 3},
     rarete = COMMONPLACE,
     
 )
@@ -816,23 +825,23 @@ Cloister = Piece(
 Veranda = Piece(
     nom = "Veranda",
     image = "assets/rooms/Veranda_Icon.png",  
-    portes={"haut": False,"droite": False,"bas": True,"gauche": True},
+    portes={"haut": True,"droite": False,"bas": True,"gauche": False},
     type_de_piece= "Greenroom",
     cout_gemmes = 2,
     objets = ["aleatoire"],
-    effet = None,#augmente les chances de trouver des objets dans les green room
+    effet = {"type": "object_probability", "bonus": 0.1},
     rarete = UNUSUAL,
     
 )
 
 GreenHouse = Piece(
-    nom = "Hallway",
+    nom = "Greenhouse",
     image = "assets/rooms/Greenhouse_Icon.png",  
     portes={"haut": False,"droite": False,"bas": True,"gauche": False},
     type_de_piece= "Greenroom",
     cout_gemmes = 1,
     objets = ["aleatoire"],
-    effet = None,#augmente les chances de tirer des green room
+    effet = {"type": "room_probability", "cible": "Greenroom", "delta": 0.5},
     rarete = STANDART,
     
 )
@@ -858,6 +867,7 @@ SecretGaden = Piece(
     objets = [],
     effet = None,#eparpille des fruits dans le manoir
     rarete = RARE,
+    interactions = [{"type": "trou", "quantite": 2}]
     
 )
 
@@ -871,6 +881,10 @@ Commissary = Piece(
     objets = [],
     effet = None,
     rarete = STANDART,
+    commerce = [
+        {"nom": "Ration (+5 pas)", "cout": 2, "gain": {"ressource": "Pas", "quantite": 5}},
+        {"nom": "Gemmes de poche", "cout": 5, "gain": {"ressource": "Gemmes", "quantite": 1}}
+    ]
     
 )
 
@@ -883,6 +897,10 @@ Kitchen = Piece(
     objets = [],
     effet = None,
     rarete = COMMONPLACE,
+    commerce = [
+        {"nom": "Repas chaud (+10 pas)", "cout": 3, "gain": {"ressource": "Pas", "quantite": 10}},
+        {"nom": "Fruit frais (+3 pas)", "cout": 1, "gain": {"ressource": "Pas", "quantite": 3}}
+    ]
     
 )
 
@@ -895,6 +913,9 @@ Locksmith = Piece(
     objets = [],
     effet = None,
     rarete = UNUSUAL,
+    commerce = [
+        {"nom": "Clé simple", "cout": 3, "gain": {"ressource": "Cle", "quantite": 1}}
+    ]
     
 )
 
@@ -907,6 +928,10 @@ Showroom = Piece(
     objets = [],
     effet = None,
     rarete = RARE,
+    commerce = [
+        {"nom": "Dé en ivoire", "cout": 4, "gain": {"ressource": "Des", "quantite": 1}},
+        {"nom": "Gemmes polies", "cout": 6, "gain": {"ressource": "Gemmes", "quantite": 2}}
+    ]
     
 )
 
@@ -919,6 +944,10 @@ Laundryroom = Piece(
     objets = [],
     effet = None,
     rarete = RARE,
+    commerce = [
+        {"nom": "Nettoyage express (+2 pas)", "cout": 1, "gain": {"ressource": "Pas", "quantite": 2}},
+        {"nom": "Réparation d'équipement (+1 clé)", "cout": 4, "gain": {"ressource": "Cle", "quantite": 1}}
+    ]
     
 )
 
@@ -931,6 +960,10 @@ Bookshop = Piece(
     objets = [],
     effet = None,
     rarete = RARE,
+    commerce = [
+        {"nom": "Guide tactique (+1 dé)", "cout": 3, "gain": {"ressource": "Des", "quantite": 1}},
+        {"nom": "Atlas secret (+1 gemme)", "cout": 4, "gain": {"ressource": "Gemmes", "quantite": 1}}
+    ]
     
 )
 
@@ -943,6 +976,10 @@ TheArmory = Piece(
     objets = [],
     effet = None,
     rarete = STANDART,
+    commerce = [
+        {"nom": "Renforcer l'équipement (+1 clé)", "cout": 3, "gain": {"ressource": "Cle", "quantite": 1}},
+        {"nom": "Bouclier improvisé (+5 pas)", "cout": 2, "gain": {"ressource": "Pas", "quantite": 5}}
+    ]
     
 )
 
@@ -955,6 +992,10 @@ MountHollyGiftShop = Piece(
     objets = [],
     effet = None,
     rarete = RARE,
+    commerce = [
+        {"nom": "Souvenir (+1 gemme)", "cout": 3, "gain": {"ressource": "Gemmes", "quantite": 1}},
+        {"nom": "Porte-bonheur (+1 dé)", "cout": 4, "gain": {"ressource": "Des", "quantite": 1}}
+    ]
     
 )
 
@@ -978,7 +1019,7 @@ Chapel = Piece(
     type_de_piece= "Redroom",
     cout_gemmes = 0,
     objets = [],
-    effet = None,#perd une piece a chaque fois qu'on rentre dans cette piece
+    effet = {"type": "enter_resource", "ressource": "Gold", "quantite": -1, "message": "Vous faites une offrande (-1 or)"},
     rarete = COMMONPLACE,
     
 )
@@ -990,7 +1031,7 @@ MaidsChamber = Piece(
     type_de_piece= "Redroom",
     cout_gemmes = 0,
     objets = [],
-    effet = None,
+    effet = {"type": "object_probability", "bonus": -0.05},
     rarete = UNUSUAL,
     
 )
@@ -1038,7 +1079,7 @@ Weightroom= Piece(
     type_de_piece= "Redroom",
     cout_gemmes = 0,
     objets = [],
-    effet = None,#divise par deux notre nombre de pas
+    effet = {"type": "draw_resource", "ressource": "Pas", "quantite": -5},
     rarete = RARE,
     
 )
@@ -1050,7 +1091,7 @@ Furnace = Piece(
     type_de_piece= "Redroom",
     cout_gemmes = 0,
     objets = [],
-    effet = None,#augmente la chance de tirer des red rooms
+    effet = {"type": "room_probability", "cible": "Redroom", "delta": 0.5},
     rarete = RARE,
     
 )
@@ -1095,5 +1136,12 @@ pioche = [
     Laundryroom, Bookshop, TheArmory,
     MountHollyGiftShop, Lavatory, Chapel,
     MaidsChamber, Archives, Gymnasium,
-    DarkRoom, Weightroom, Furnace
+    DarkRoom, Weightroom, Furnace, MirrorRoom, ClockworkRoom
 ]
+
+
+def obtenir_piece_par_nom(nom):
+    for piece in pioche:
+        if piece.nom == nom:
+            return piece
+    return None

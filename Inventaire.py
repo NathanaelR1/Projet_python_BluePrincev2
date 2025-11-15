@@ -50,6 +50,64 @@ class des(Objets):
         print(f"le joueur utilise un {self.nom} et tire de nouvelles pièces")
 
 
+class Gold(Objets):
+    """Représente les pièces d'or de l'inventaire."""
+    def __init__(self):
+        super().__init__("Gold")
+
+
+class Marteau(Objets):
+    """Permet d'ouvrir certains coffres sans consommer de clé."""
+    def __init__(self):
+        super().__init__("Marteau")
+
+    def utiliser(self, joueur):
+        print("Le marteau permet de forcer des coffres.")
+
+
+class MetalDetector(Objets):
+    """Augmente les chances de trouver des clefs et pièces."""
+    def __init__(self):
+        super().__init__("Detecteur")
+
+    def utiliser(self, joueur):
+        print("Le détecteur augmente la chance de trouver du métal.")
+
+
+class PatteLapin(Objets):
+    """Augmente les chances de loot rares."""
+    def __init__(self):
+        super().__init__("Patte")
+
+    def utiliser(self, joueur):
+        print("La patte de lapin porte chance.")
+
+
+class Pelle(Objets):
+    """Objet permanent permettant de creuser."""
+    def __init__(self):
+        super().__init__("Pelle")
+
+    def utiliser(self, joueur):
+        print("La pelle permet de creuser dans certaines salles.")
+
+
+def creer_objet_depuis_nom(nom):
+    """Fabrique l'objet adéquat en fonction du nom utilisé dans l'inventaire."""
+    mapping = {
+        "Pas": Objets("Pas"),
+        "Gemmes": gemme("Gemmes"),
+        "Cle": cle("Cle"),
+        "Gold": Gold(),
+        "Des": des("Des"),
+        "Pelle": Pelle(),
+        "Marteau": Marteau(),
+        "Detecteur": MetalDetector(),
+        "Patte": PatteLapin(),
+    }
+    return mapping.get(nom, Objets(nom))
+
+
 
 class Joueur:
     """Cette classe représente l'inventaire du joueur et ses actions """
@@ -57,7 +115,13 @@ class Joueur:
         #self.nom= nom 
         self.__inventaire= {"Pas": {"objet": Objets("Pas"), "nombre": 70},  
             "Gemmes": {"objet": gemme("Gemmes"), "nombre": 2},
-            "Cle": {"objet": cle("Cle"), "nombre": 0}
+            "Cle": {"objet": cle("Cle"), "nombre": 0},
+            "Gold": {"objet": Gold(), "nombre": 0},
+            "Des": {"objet": des("Des"), "nombre": 0},
+            "Pelle": {"objet": Pelle(), "nombre": 0},
+            "Marteau": {"objet": Marteau(), "nombre": 0},
+            "Detecteur": {"objet": MetalDetector(), "nombre": 0},
+            "Patte": {"objet": PatteLapin(), "nombre": 0},
             }       # inventaire de départ 
                  
     @property   
@@ -72,7 +136,7 @@ class Joueur:
         if obj.nom not in self.__inventaire:
             self.__inventaire[obj.nom]= {"objet": obj , "nombre": 0}
 
-        if quantite<0 and self.__inventaire[obj.nom]["nombre"] - quantite < 0:
+        if quantite < 0 and self.__inventaire[obj.nom]["nombre"] + quantite < 0:
             print(f"pas assez de {obj.nom} dans l'inventaire")
         else:
             self.__inventaire[obj.nom]["nombre"]+= quantite  
@@ -107,3 +171,20 @@ class Joueur:
             #print(f"le joueur utilise {nom_objet}.")
         else:
             print(f"pas de {nom_objet} dans l'inventaire.")
+
+    def possede(self, nom_objet, quantite):
+        """Vérifie si l'inventaire contient au moins une quantité donnée."""
+        return self.__inventaire.get(nom_objet, {"nombre": 0})["nombre"] >= quantite
+
+    def depenser(self, nom_objet, quantite):
+        """Déduit une quantité sans déclencher l'effet `utiliser`."""
+        if self.possede(nom_objet, quantite):
+            self.__inventaire[nom_objet]["nombre"] -= quantite
+            if self.__inventaire[nom_objet]["nombre"] == 0 and nom_objet not in ["Pas"]:
+                del self.__inventaire[nom_objet]
+            return True
+        return False
+
+    def get_quantite(self, nom_objet):
+        """Retourne la quantité de la ressource demandée (0 par défaut)."""
+        return self.__inventaire.get(nom_objet, {"nombre": 0})["nombre"]
