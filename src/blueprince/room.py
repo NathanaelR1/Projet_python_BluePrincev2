@@ -7,13 +7,13 @@ class Piece:
         Représente une pièce du manoir et défini toute ces caractéristique.
         C'est a partir de cette class qu'on récupere les informations des pièces.
 
-        :param nom: Nom de la pièce (ex: "Hall d'entrée")
+        :param nom: Nom de la pièce 
         :param image: chemin ou surface pygame représentant l'image de la pièce
         :param portes: dict des portes, ex: {"haut": 0, "droite": None, "bas": 1, "gauche": None}
         :param cout_gemmes: coût en gemmes pour tirer cette pièce (0 par défaut)
         :param objets: liste d'objets présents dans la pièce
         :param effet: effet spécial éventuel (fonction ou string)
-        :param rarete: 0 = commune, 1 = rare, 2 = épique, 3 = légendaire
+        :param rarete: 0 = COMMONPLACE, 1 = STANDART, 2 = UNUSUAL, 3 = RARA
         :param condition: règle de placement (ex: "bordure", "centre", etc.)
         """
         self.nom = nom
@@ -30,8 +30,6 @@ class Piece:
         self.angle = 0  
         self.portes_original = portes.copy()
         self.angle_original = 0
-        #self.or_total = or_total
-        #self.or_ramasse = False
         self.commerce = list(commerce) if commerce else []
         self.interactions = []
         if interactions:

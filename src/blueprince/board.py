@@ -1,9 +1,6 @@
-import pygame
-
 import random
 import catalogue_des_pieces
-#fusion
-from Inventaire import Joueur,Objets, Gold, creer_objet_depuis_nom, Nourriture
+from Inventaire import Gold, creer_objet_depuis_nom, Nourriture
 from Aleatoire import tirer_loot, genere_objet_aleatoire
 import copy
 
@@ -180,7 +177,6 @@ class Board:
         self.selection_tirage = 0  # index du choix par défaut
         self.mode = "choix_piece"
     
-        #print("Tirage :", [piece.nom for piece in pieces_tirees])
         return pieces_tirees
 
         
@@ -281,11 +277,6 @@ class Board:
         # Réinitialise la liste
         self.objets_disponibles = []
     
-        # L'or devient un objet spécial affiché comme "Gold"
-        # if piece.or_total and not piece.or_ramasse:
-        #     for _ in range(piece.or_total):
-        #         self.objets_disponibles.append(Gold())
-    
         # Tous les objets sont listés
         if piece.objets and not piece.objets_ramasses:
             for tag in piece.objets:
@@ -347,9 +338,6 @@ class Board:
             if piece:
                 piece.objets_ramasses = True
             self.mode = "exploration"
-            #self.message = "Rien d'autre ici."
-        #else:
-            #self.message = f"Vous avez ramasser {obj.nom}."
 
 
 
