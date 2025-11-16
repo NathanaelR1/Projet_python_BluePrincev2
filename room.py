@@ -2,7 +2,7 @@ import random
 
 class Piece:
     def __init__(self, nom, image, portes,type_de_piece, cout_gemmes=0, objets=None, effet=None, rarete=0, condition=None,
-                 niveaux_portes=None):
+                 niveaux_portes=None, or_total=0, commerce=None, interactions=None):
         """
         Représente une pièce du manoir et défini toute ces caractéristique.
         C'est a partir de cette class qu'on récupere les informations des pièces.
@@ -22,6 +22,7 @@ class Piece:
         self.type_de_piece = type_de_piece
         self.cout_gemmes = cout_gemmes
         self.objets = list(objets) if objets else []
+        self.objets_ramasses = False
         self.effet = effet
         self.rarete = rarete
         self.condition = condition
@@ -29,6 +30,19 @@ class Piece:
         self.angle = 0  
         self.portes_original = portes.copy()
         self.angle_original = 0
+        self.or_total = or_total
+        self.or_ramasse = False
+        self.commerce = list(commerce) if commerce else []
+        self.interactions = []
+        if interactions:
+            for inter in interactions:
+                quantite = inter.get("quantite", 1)
+                base = inter.copy()
+                base.pop("quantite", None)
+                for _ in range(quantite):
+                    self.interactions.append(base.copy())
+        self.interactions_history = []
+        self.objets_ramasses = False
 
     def tirer_niveaux_portes(self, rangee):
         """ 

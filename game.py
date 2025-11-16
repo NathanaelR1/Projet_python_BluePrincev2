@@ -17,14 +17,13 @@ class Game:
         self.screen = pygame.display.set_mode((1920, 1080), pygame.FULLSCREEN)
         pygame.display.set_caption("Blue Prince Prototype")
         self.clock = pygame.time.Clock()
-        self.board = Board()
+        self.joueur=Joueur()
+        self.board = Board(self.joueur)
         self.assets = Assets()
         self.direction_ui = None
 
         self.tirage_en_cours = []
         self.selection_tirage = 0
-        #fusion 
-        self.joueur=Joueur()
         
  
 
@@ -103,59 +102,82 @@ class Game:
         
         pygame.draw.rect(self.screen, (255,255,255),(depart_x,depart_y,largeur,hauteur))
     
-        if self.board.mode == "exploration":
+        piece_actuelle = self.board.piece_actuelle() if hasattr(self.board, "piece_actuelle") else None
+        if self.board.mode == "exploration" and piece_actuelle:
             nom_piece_actuelle = pygame.font.Font(None, 30)
-            nom_piece_actuelle = nom_piece_actuelle.render(self.board.grille[self.board.ligne_joueur][self.board.colonne_joueur].nom, True, (0, 0, 0))
+            nom_piece_actuelle = nom_piece_actuelle.render(piece_actuelle.nom, True, (0, 0, 0))
             self.screen.blit(nom_piece_actuelle, (450, 375))
         
         texte_inventaire = pygame.font.Font(None, 30)
         texte_inventaire = texte_inventaire.render("Inventaire :", True, (0, 0, 0))
         self.screen.blit(texte_inventaire, (450, 50))
         
-        img_pas = pygame.image.load("assets/Inventaire/Steps1.png").convert()
-        img_pas = pygame.transform.scale(img_pas, (25,25))
-        self.screen.blit(img_pas, ( 1200, 80))
 
-        texte_pas = pygame.font.Font(None, 30)
-        texte_pas = texte_pas.render(f"{self.joueur.inventaire["Pas"]["nombre"]}", True, (0, 0, 0))
-        self.screen.blit(texte_pas, (1240, 80))
+        ressources = [
+            ("assets/Inventaire/Steps1.png", "Pas", 80),
+            ("assets/Inventaire/Gold.png", "Gold", 120),
+            ("assets/Inventaire/Gem.png", "Gemmes", 160),
+            ("assets/Inventaire/Key.png", "Cle", 200),
+            ("assets/Inventaire/Ivory_dice.png", "Des", 240),
+        ]
+        font_valeur = pygame.font.Font(None, 28)
+        for chemin, nom, pos_y in ressources:
+            img = pygame.image.load(chemin).convert_alpha()
+            img = pygame.transform.scale(img, (25, 25))
+            self.screen.blit(img, (1200, pos_y))
+            quantite = self.joueur.get_quantite(nom)
+            texte_qte = font_valeur.render(str(quantite), True, (0, 0, 0))
+            self.screen.blit(texte_qte, (1250, pos_y + 5))
+# =======
+#         img_pas = pygame.image.load("assets/Inventaire/Steps1.png").convert()
+#         img_pas = pygame.transform.scale(img_pas, (25,25))
+#         self.screen.blit(img_pas, ( 1200, 80))
+
+#         texte_pas = pygame.font.Font(None, 30)
+#         texte_pas = texte_pas.render(f"{self.joueur.inventaire["Pas"]["nombre"]}", True, (0, 0, 0))
+#         self.screen.blit(texte_pas, (1240, 80))
         
-        img_gold = pygame.image.load("assets/Inventaire/Gold.png")
-        img_gold = pygame.transform.scale(img_gold, (25,25))
-        self.screen.blit(img_gold, ( 1200, 120))
+#         img_gold = pygame.image.load("assets/Inventaire/Gold.png")
+#         img_gold = pygame.transform.scale(img_gold, (25,25))
+#         self.screen.blit(img_gold, ( 1200, 120))
 
-        texte_gold = pygame.font.Font(None, 30)
-        texte_gold = texte_gold.render(f"{self.joueur.inventaire["or"]["nombre"]}", True, (0, 0, 0))
-        self.screen.blit(texte_gold, (1240, 120))
+#         texte_gold = pygame.font.Font(None, 30)
+#         texte_gold = texte_gold.render(f"{self.joueur.inventaire["or"]["nombre"]}", True, (0, 0, 0))
+#         self.screen.blit(texte_gold, (1240, 120))
         
-        img_gem = pygame.image.load("assets/Inventaire/Gem.png")
-        img_gem = pygame.transform.scale(img_gem, (25,25))
-        self.screen.blit(img_gem, ( 1200, 160))
+#         img_gem = pygame.image.load("assets/Inventaire/Gem.png")
+#         img_gem = pygame.transform.scale(img_gem, (25,25))
+#         self.screen.blit(img_gem, ( 1200, 160))
 
-        texte_gem = pygame.font.Font(None, 30)
-        texte_gem = texte_gem.render(f"{self.joueur.inventaire["gemme"]["nombre"]}", True, (0, 0, 0))
-        self.screen.blit(texte_gem, (1240, 160))
+#         texte_gem = pygame.font.Font(None, 30)
+#         texte_gem = texte_gem.render(f"{self.joueur.inventaire["gemme"]["nombre"]}", True, (0, 0, 0))
+#         self.screen.blit(texte_gem, (1240, 160))
         
-        img_key = pygame.image.load("assets/Inventaire/Key.png")
-        img_key = pygame.transform.scale(img_key, (25,25))
-        self.screen.blit(img_key, ( 1200, 200))
+#         img_key = pygame.image.load("assets/Inventaire/Key.png")
+#         img_key = pygame.transform.scale(img_key, (25,25))
+#         self.screen.blit(img_key, ( 1200, 200))
 
-        texte_key = pygame.font.Font(None, 30)
-        texte_key = texte_key.render(f"{self.joueur.inventaire["cle"]["nombre"]}", True, (0, 0, 0))
-        self.screen.blit(texte_key, (1240, 200))
+#         texte_key = pygame.font.Font(None, 30)
+#         texte_key = texte_key.render(f"{self.joueur.inventaire["cle"]["nombre"]}", True, (0, 0, 0))
+#         self.screen.blit(texte_key, (1240, 200))
         
-        img_dice = pygame.image.load("assets/Inventaire/Ivory_dice.png").convert()
-        img_dice = pygame.transform.scale(img_dice, (25,25))
-        self.screen.blit(img_dice, ( 1200, 240))
+#         img_dice = pygame.image.load("assets/Inventaire/Ivory_dice.png").convert()
+#         img_dice = pygame.transform.scale(img_dice, (25,25))
+#         self.screen.blit(img_dice, ( 1200, 240))
 
-        texte_dice = pygame.font.Font(None, 30)
-        texte_dice = texte_dice.render(f"{self.joueur.inventaire["des"]["nombre"]}", True, (0, 0, 0))
-        self.screen.blit(texte_dice, (1240, 240))
+#         texte_dice = pygame.font.Font(None, 30)
+#         texte_dice = texte_dice.render(f"{self.joueur.inventaire["des"]["nombre"]}", True, (0, 0, 0))
+#         self.screen.blit(texte_dice, (1240, 240))
+# >>>>>>> main
  
         if self.board.message:
             font_message = pygame.font.Font(None, 30)  
             texte_message = font_message.render(self.board.message, True, (0, 0, 0))  
-            self.screen.blit(texte_message, (450, 680))  
+            self.screen.blit(texte_message, (450, 680))
+        elif piece_actuelle and piece_actuelle.commerce:
+            font_message = pygame.font.Font(None, 28)
+            texte_message = font_message.render("Appuie sur M pour ouvrir le magasin.", True, (0, 0, 0))
+            self.screen.blit(texte_message, (450, 680))
                 
         
         #tirage du bas affichage
@@ -183,8 +205,32 @@ class Game:
                     self.screen.blit(text, (x_img, y_img + 135))
                     
 
+        if self.board.magasin_ouvert:
+            font_shop = pygame.font.Font(None, 26)
+            piece = self.board.piece_actuelle()
+            if piece and piece.commerce:
+                instructions = font_shop.render("Magasin ouvert (←/→ pour naviguer, Entrée pour acheter, ESC pour quitter)", True, (0, 0, 0))
+                self.screen.blit(instructions, (450, 720))
+                y_magasin = 760
+                for i, offre in enumerate(piece.commerce):
+                    x = 450 + i * 220
+                    rect = pygame.Rect(x, y_magasin, 200, 90)
+                    couleur = (200, 200, 200) if i == self.board.selection_magasin else (220, 220, 220)
+                    pygame.draw.rect(self.screen, couleur, rect)
+                    pygame.draw.rect(self.screen, (0, 0, 0), rect, 2)
+                    texte_nom = font_shop.render(offre["nom"], True, (0, 0, 0))
+                    self.screen.blit(texte_nom, (x + 10, y_magasin + 10))
+                    texte_cout = font_shop.render(f"Cout: {offre['cout']} or", True, (0, 0, 0))
+                    self.screen.blit(texte_cout, (x + 10, y_magasin + 40))
+            else:
+                info = font_shop.render("Ce magasin n'a plus d'offres.", True, (0, 0, 0))
+                self.screen.blit(info, (450, 760))
+        elif piece_actuelle and piece_actuelle.interactions:
+            font_inter = pygame.font.Font(None, 26)
+            texte_inter = font_inter.render("Appuie sur E pour interagir avec la pièce.", True, (0, 0, 0))
+            self.screen.blit(texte_inter, (450, 720))
+
         
-                
     
 
     def run(self):
@@ -202,6 +248,17 @@ class Game:
                 
                 if self.board.mode == "exploration":
                     if event.type == pygame.KEYDOWN:
+                        if self.board.magasin_ouvert:
+                            if event.key == pygame.K_LEFT:
+                                self.board.changer_selection_magasin("gauche")
+                            elif event.key == pygame.K_RIGHT:
+                                self.board.changer_selection_magasin("droite")
+                            elif event.key == pygame.K_RETURN:
+                                self.board.acheter_selection_magasin()
+                            elif event.key in (pygame.K_ESCAPE, pygame.K_m):
+                                self.board.fermer_magasin()
+                            continue
+
                         if event.key == pygame.K_z:
                             self.board.selectionner_direction("haut")
                             self.direction_ui = "haut"
@@ -220,7 +277,16 @@ class Game:
                             #en commentaire pour l'instant j'utilise pas se deplacer
                             #self.board.se_deplacer(self.joueur)
                         elif event.key == pygame.K_SPACE:
-                            self.board.se_deplacer(self.joueur)
+
+                            self.board.se_deplacer()
+                        elif event.key == pygame.K_m:
+                            if self.board.magasin_ouvert:
+                                self.board.fermer_magasin()
+                            else:
+                                self.board.ouvrir_magasin()
+                        elif event.key == pygame.K_e:
+                            self.board.interagir()
+
                             
         
                 
@@ -231,7 +297,11 @@ class Game:
                         elif event.key == pygame.K_RIGHT:
                             self.board.changer_selection_tirage("droite")
                         elif event.key == pygame.K_RETURN:  
-                            self.board.placer_piece_choisie(self.joueur)
+
+                            self.board.placer_piece_choisie()
+                        elif event.key == pygame.K_ESCAPE:
+                            self.board.annuler_tirage()
+
                               
                     
 

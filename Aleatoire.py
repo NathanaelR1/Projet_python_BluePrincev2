@@ -1,40 +1,80 @@
 import random
-from Inventaire import Objets, Nourriture, Joueur
+from Inventaire import cle, gemme, Nourriture, Gold, creer_objet_depuis_nom
 
-def genere_obj(joueur):
-    """tire aléatoirement un objet"""
-    obj_possibles = [
-        Objets("cle"),
-        Objets("gemme"),
-        Nourriture("pomme"),
-        Nourriture("banane"),
-        Nourriture("gateau"),
-        Nourriture("sandwich"),
-        Nourriture("repas"),
-        Objets("lockpick")
+def _copie_obj(obj):
+    """Crée une copie simple d'un objet pour les loots."""
+    if isinstance(obj, Nourriture):
+        return Nourriture(obj.nom)
+    if obj.nom in ["Cle", "Gemmes", "Gold", "Des", "Pelle", "Marteau", "Detecteur", "Patte"]:
+        return creer_objet_depuis_nom(obj.nom if obj.nom != "Gemmes" else "Gemmes")
+    return obj
+
+
+def genere_objet_aleatoire(chance_bonus=0.0, joueur=None):
+    """Tire un objet pour les pièces avec tag 'aleatoire'."""
+    table = [
+        ([cle("Cle")], 0.25),
+        ([gemme("Gemmes")], 0.2),
+        ([Nourriture("pomme")], 0.15),
+        ([Nourriture("banane")], 0.1),
+        ([Nourriture("sandwich")], 0.08),
+        ([Gold()], 0.15),
+        ([], 0.07)
     ]
+    return _tirer_lot(table, chance_bonus, joueur)
 
-    probabilites = [
-        0.3,   # Cle
-        0.2,   # Gemmes
-        0.25,  # pomme
-        0.12,   # banane
-        0.07,  # gateau
-        0.05,  # sandwich
-        0.01,  # repas
-        0.002  #lockpick kit
-    ]
 
-    obj_genere= random.choices(obj_possibles, weights=probabilites, k=1)[0]
-    if "lockpick" in joueur.inventaire and obj_genere.nom == "lockpick":
-        obj_genere = Nourriture("repas")
-    return obj_genere
-    
 
-def tirer_pieces(grille,ligne,colonne):
-    """temporaire pour tester la génération de pièce"""
-    pieces=["Pantry","SpareRoom"]
-    i=random.randint(0,1)
-    grille[ligne][colonne] = pieces[i]
-    return grille
-    
+
+def tirer_loot(source, chance_bonus=0.0, joueur=None):
+    """Retourne un lot d'objets ou ressources selon la source."""
+    tables = {
+        "coffre": [
+            ([gemme("Gemmes"), gemme("Gemmes")], 0.25),
+            ([cle("Cle")], 0.2),
+            ([Nourriture("repas")], 0.1),
+            ([Gold(), Gold(), Gold()], 0.25),
+            ([creer_objet_depuis_nom("Marteau")], 0.05),
+            ([], 0.15)
+        ],
+        "casier": [
+            ([cle("Cle")], 0.35),
+            ([Nourriture("sandwich")], 0.2),
+            ([gemme("Gemmes")], 0.15),
+            ([], 0.3)
+        ],
+        "trou": [
+            ([Nourriture("pomme")], 0.3),
+            ([Nourriture("gateau")], 0.1),
+            ([Gold(), Gold()], 0.25),
+            ([creer_objet_depuis_nom("Detecteur")], 0.05),
+            ([], 0.3)
+        ],
+        "piece": [
+            ([cle("Cle")], 0.2),
+            ([gemme("Gemmes")], 0.2),
+            ([Gold()], 0.2),
+            ([Nourriture("banane")], 0.2),
+            ([], 0.2)
+        ]
+    }
+    table = tables.get(source, tables["piece"])
+    return _tirer_lot(table, chance_bonus, joueur)
+
+
+def _tirer_lot(table, chance_bonus, joueur):
+    """Tire un lot en appliquant bonus et objets permanents."""
+    bonus = chance_bonus
+    if joueur:
+        if joueur.possede("Patte", 1):
+            bonus += 0.05
+        if joueur.possede("Detecteur", 1):
+            bonus += 0.05
+    total = sum(p for _, p in table)
+    rand = random.random() * (total + bonus)
+    cumul = 0
+    for lot, proba in table:
+        cumul += proba
+        if rand <= cumul:
+            return [_copie_obj(obj) for obj in lot if obj]
+    return []
