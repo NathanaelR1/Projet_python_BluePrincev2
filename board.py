@@ -2,9 +2,9 @@ import pygame
 
 import random
 import catalogue_des_pieces
-#fusion
 from Inventaire import Joueur,Objets, Gold, creer_objet_depuis_nom, Nourriture
 from Aleatoire import tirer_loot, genere_objet_aleatoire
+
 import copy
 
 class Board:
@@ -121,7 +121,7 @@ class Board:
     
         # Vérification des bornes de la grille
         if not (0 <= ligne < 9 and 0 <= colonne < 5):
-            print("Mur du manoir, impossible de bouger.")
+            self.message = "Mur du manoir, impossible de bouger."
             return
         
         if piece_actuelle.portes[self.direction] == False:
@@ -136,6 +136,7 @@ class Board:
             
             if not self.consommer_pas():
                 return
+
             self.ligne_joueur = ligne
             self.colonne_joueur = colonne
             self.message = ""
@@ -390,6 +391,7 @@ class Board:
             
             
             
+
     def interagir(self):
         piece = self.piece_actuelle()
         if piece is None or not piece.interactions:
@@ -447,7 +449,7 @@ class Board:
         piece_choisie = self.tirage_en_cours[self.selection_tirage]
         ligne, colonne = self.case_cible
         
-        #on eleve d'abord de la pioche la piece
+        #on enleve d'abord de la pioche la piece
         if piece_choisie in self.pioche_initial:
             self.pioche_initial.remove(piece_choisie)
         #puis on cree une copie qu'on va placer
@@ -467,6 +469,30 @@ class Board:
         self.case_cible = None
         self.direction_pour_placement = None
         print(f" Pièce '{piece_choisie.nom}' placée en ({ligne}, {colonne})")
+
+        # obj_recup=[]
+        # for obj in piece_choisie.objets:
+        #     if obj[1] =="rd":
+        #         nombre_obj= random.randint(1,9)
+        #     else:
+        #         nombre_obj=obj[1]
+            
+        #     if obj[0] == "aleatoire":
+        #         for i in range(nombre_obj):
+        #             obj_aleatoire=genere_obj(joueur)
+        #             joueur.ramasser_objet(obj_aleatoire)
+        #         obj_recup.append(obj_aleatoire.nom)
+
+        #     else:
+        #         if obj[0]=="pomme":
+        #             joueur.ramasser_objet(Nourriture(obj[0]))
+        #         else:
+        #             joueur.add_inv(Objets(obj[0]),nombre_obj)
+        #         obj_recup.append(obj[0])
+
+        # if len(obj_recup)>0:
+        #     self.message = "Objets récupérés : " + ", ".join(obj_recup)
+
     
         # Retour au mode exploration
         self.mode = "exploration"

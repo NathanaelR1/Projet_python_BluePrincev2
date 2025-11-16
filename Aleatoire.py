@@ -24,6 +24,8 @@ def genere_objet_aleatoire(chance_bonus=0.0, joueur=None):
     return _tirer_lot(table, chance_bonus, joueur)
 
 
+
+
 def tirer_loot(source, chance_bonus=0.0, joueur=None):
     """Retourne un lot d'objets ou ressources selon la source."""
     tables = {
