@@ -1,11 +1,11 @@
 import random
-from Inventaire import cle, gemme, Nourriture, Gold, creer_objet_depuis_nom
+from Inventaire import cle, gemme, Nourriture, Gold, creer_objet_depuis_nom, KitCrochetage, des
 
 def _copie_obj(obj):
     """Crée une copie simple d'un objet pour les loots."""
     if isinstance(obj, Nourriture):
         return Nourriture(obj.nom)
-    if obj.nom in ["Cle", "Gemmes", "Gold", "Des", "Pelle", "Marteau", "Detecteur", "Patte"]:
+    if obj.nom in ["Cle", "Gemmes", "Gold", "Des", "Pelle", "Marteau", "Detecteur", "Patte", "Kit de crochetage"]:
         return creer_objet_depuis_nom(obj.nom if obj.nom != "Gemmes" else "Gemmes")
     return obj
 
@@ -19,11 +19,11 @@ def genere_objet_aleatoire(chance_bonus=0.0, joueur=None):
         ([Nourriture("banane")], 0.1),
         ([Nourriture("sandwich")], 0.08),
         ([Gold()], 0.15),
-        ([], 0.07)
+        ([], 0.07),
+        ([KitCrochetage()], 0),
+        ([des("des")], 0.5)
     ]
     return _tirer_lot(table, chance_bonus, joueur)
-
-
 
 
 def tirer_loot(source, chance_bonus=0.0, joueur=None):

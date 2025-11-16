@@ -91,6 +91,14 @@ class Pelle(Objets):
     def utiliser(self, joueur):
         print("La pelle permet de creuser dans certaines salles.")
 
+class KitCrochetage(Objets):
+    """Permet d'ouvrir portes sans consommer de clé."""
+    def __init__(self):
+        super().__init__("Kit de crochetage")
+
+    def utiliser(self, joueur):
+        print("")
+
 
 def creer_objet_depuis_nom(nom):
     """Fabrique l'objet adéquat en fonction du nom utilisé dans l'inventaire."""
@@ -104,6 +112,7 @@ def creer_objet_depuis_nom(nom):
         "Marteau": Marteau(),
         "Detecteur": MetalDetector(),
         "Patte": PatteLapin(),
+        "Kit de crochetage" : KitCrochetage()
     }
     return mapping.get(nom, Objets(nom))
 
@@ -114,7 +123,6 @@ class Joueur:
     def __init__(self):
         #self.nom= nom 
         self.__inventaire= {"Pas": {"objet": Objets("Pas"), "nombre": 70},  
-
             "Gemmes": {"objet": gemme("Gemmes"), "nombre": 2},
             "Cle": {"objet": cle("Cle"), "nombre": 0},
             "Gold": {"objet": Gold(), "nombre": 0},
@@ -123,7 +131,7 @@ class Joueur:
             "Marteau": {"objet": Marteau(), "nombre": 0},
             "Detecteur": {"objet": MetalDetector(), "nombre": 0},
             "Patte": {"objet": PatteLapin(), "nombre": 0},
-
+            "Kit de crochetage": {"objet": KitCrochetage(), "nombre": 0},
             }       # inventaire de départ 
                  
     @property   
@@ -134,7 +142,7 @@ class Joueur:
 
     def add_inv(self, obj, quantite):
         """ajoute une quantite d'un objet à l'inventaire (retire si négatif)"""
-
+        
         if obj.nom not in self.__inventaire:
             self.__inventaire[obj.nom]= {"objet": obj , "nombre": 0}
 
@@ -167,7 +175,7 @@ class Joueur:
             objet.utiliser(self)
             
             self.__inventaire[nom_objet]["nombre"] -=1  
-            if self.__inventaire[nom_objet]["nombre"]==0 and nom_objet!= "Pas" :
+            if self.__inventaire[nom_objet]["nombre"]==0:
                 del self.__inventaire[nom_objet]
 
             #print(f"le joueur utilise {nom_objet}.")

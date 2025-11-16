@@ -2,9 +2,9 @@ import pygame
 
 import random
 import catalogue_des_pieces
+#fusion
 from Inventaire import Joueur,Objets, Gold, creer_objet_depuis_nom, Nourriture
 from Aleatoire import tirer_loot, genere_objet_aleatoire
-
 import copy
 
 class Board:
@@ -41,6 +41,8 @@ class Board:
         self.pieces_placees = {}
         self.enregistrer_piece(self.ligne_joueur, self.colonne_joueur)
         self.enregistrer_piece(self.ligne_antechambert, self.colonne_antechambert)
+        self.chance_crochetage = 0.75
+        
        
         
 
@@ -48,43 +50,6 @@ class Board:
         """Met à jour la direction choisie par le joueur via ZQSD."""
         self.direction = direction
         
-        
-        
-
-    # def se_deplacer(self,joueur):
-
-    #     """Tente de déplacer le joueur s'il n'y a pas de mur."""
-    #     if self.direction is None:
-    #         return
-
-    #     nouvelle_ligne = self.ligne_joueur
-    #     nouvelle_colonne = self.colonne_joueur
-
-    #     if self.direction == "haut":
-            
-    #         nouvelle_ligne -= 1
-    #     elif self.direction == "bas":
-            
-    #         nouvelle_ligne += 1
-    #     elif self.direction == "gauche":
-            
-    #         nouvelle_colonne -= 1
-    #     elif self.direction == "droite":
-            
-    #         nouvelle_colonne += 1
-
-    #     if 0 <= nouvelle_ligne < 9 and 0 <= nouvelle_colonne < 5:
-    #         self.ligne_joueur = nouvelle_ligne
-    #         self.colonne_joueur = nouvelle_colonne
-
-        
-    #     if self.grille[nouvelle_ligne][nouvelle_colonne] is None:
-    #         self.grille=tirer_pieces(self.grille,nouvelle_ligne,nouvelle_colonne)
-    #         obj_genere= genere_obj()
-    #         for obj in obj_genere:
-    #             joueur.ramasser_objet(obj)
-    #     joueur.utiliser_objet("Pas")
-    #     self.direction = None
     
     def se_deplacer(self):
         """Déplace le joueur si la salle en face existe déjà.
@@ -121,7 +86,7 @@ class Board:
     
         # Vérification des bornes de la grille
         if not (0 <= ligne < 9 and 0 <= colonne < 5):
-            self.message = "Mur du manoir, impossible de bouger."
+            print("Mur du manoir, impossible de bouger.")
             return
         
         if piece_actuelle.portes[self.direction] == False:
@@ -136,17 +101,26 @@ class Board:
             
             if not self.consommer_pas():
                 return
-
             self.ligne_joueur = ligne
             self.colonne_joueur = colonne
             self.message = ""
             self.magasin_ouvert = False
             piece = self.grille[ligne][colonne]
             self.collecter_contenu_piece(piece)
-            if piece and piece.commerce:
-                self.ouvrir_magasin(automatique=True)
             self.appliquer_effet_piece(piece, "enter")
             print(f"Le joueur s’est déplacé en ({ligne}, {colonne})")
+            return
+        
+        niveau = piece_actuelle.niveaux_portes[self.direction]
+        
+        if niveau == 1:
+            self.mode = "porte"
+            self.message = "Porte verouillée. Appuyer sur Entrée pour utiliser une clé ou un kit"
+            
+        elif niveau == 2:
+            self.mode = "porte"
+            self.message = "Porte verouillée. Appuyer sur Entrée pour utiliser une clé"
+        
 
         else:
             print("Aucune salle ici, ouverture d’une nouvelle porte.")
@@ -184,10 +158,17 @@ class Board:
     
         
         pieces_tirees = []
-        while len(pieces_tirees) < 3:
-            tirage = random.choices(self.pioche_initial, weights=poids, k=1)[0]
-            if tirage not in pieces_tirees:
-                pieces_tirees.append(tirage)
+        selection_valide = False
+        while not selection_valide:
+            pieces_tirees = []
+            while len(pieces_tirees) < 3:
+                tirage = random.choices(self.pioche_initial, weights=poids, k=1)[0]
+                if tirage not in pieces_tirees:
+                    pieces_tirees.append(tirage)
+                    
+            if any(piece.cout_gemmes == 0 for piece in pieces_tirees):
+                selection_valide = True
+    
                 
         for piece in pieces_tirees:
             self.orienter_piece_selon_direction(piece)
@@ -293,31 +274,84 @@ class Board:
         return False
 
     def collecter_contenu_piece(self, piece):
-        """Ramasse l'or et les objets fixes de la pièce."""
+        """Affiche le loot de la pièce sans rien ramasser automatiquement."""
         if piece is None:
             return
-
-        if piece.or_total and not piece.or_ramasse:
-            self.joueur.add_inv(Gold(), piece.or_total)
-            piece.or_ramasse = True
-            self.message = f"+{piece.or_total} pièces d'or ramassées"
-
+    
+        # Réinitialise la liste
+        self.objets_disponibles = []
+    
+        # L'or devient un objet spécial affiché comme "Gold"
+        # if piece.or_total and not piece.or_ramasse:
+        #     for _ in range(piece.or_total):
+        #         self.objets_disponibles.append(Gold())
+    
+        # Tous les objets sont listés
         if piece.objets and not piece.objets_ramasses:
-            objets_recuperes = []
             for tag in piece.objets:
                 if tag == "aleatoire":
                     loot = genere_objet_aleatoire(self.bonus_objets, self.joueur)
-                    for obj in loot:
-                        self.joueur.ramasser_objet(obj)
-                        objets_recuperes.append(obj.nom)
-                    continue
-                obj = self._creer_objet_depuis_tag(tag)
-                if obj:
-                    self.joueur.ramasser_objet(obj)
-                    objets_recuperes.append(obj.nom)
-            piece.objets_ramasses = True
-            if objets_recuperes:
-                self.message = f"Objets ramassés: {', '.join(objets_recuperes)}"
+                    self.objets_disponibles.extend(loot)
+                else:
+                    obj = self._creer_objet_depuis_tag(tag)
+                    if obj:
+                        self.objets_disponibles.append(obj)
+    
+        # Si la pièce contient quelque chose → mode sélection
+        if self.objets_disponibles:
+            self.selection_objet = 0
+            self.mode = "choix_objet"
+            self.message = "Choisis un objet"
+            return
+        
+        # Si rien → retour normal
+        piece.objets_ramasses = True
+        
+    def choisir_objet(self, direction):
+        """Navigation dans la liste des objets au sol."""
+        if not self.objets_disponibles:
+            return
+    
+        if direction == "haut":
+            self.selection_objet = (self.selection_objet - 1) % len(self.objets_disponibles)
+        elif direction == "bas":
+            self.selection_objet = (self.selection_objet + 1) % len(self.objets_disponibles)
+    
+    
+    def ramasser_objet_selectionne(self):
+        """Ramasse l'objet sélectionné et repasse en exploration si plus rien."""
+        if self.mode != "choix_objet":
+            return
+    
+        if not self.objets_disponibles:
+            self.mode = "exploration"
+            self.message = ""
+            return
+    
+        obj = self.objets_disponibles[self.selection_objet]
+    
+        # Ramassage via Joueur
+        self.joueur.ramasser_objet(obj)
+        self.message = f"Vous avez ramasser {obj.nom}."
+    
+        # Retire de la liste des objets affichés
+        self.objets_disponibles.pop(self.selection_objet)
+    
+        # Ajuste l'index pour ne pas sortir de la liste
+        if self.selection_objet >= len(self.objets_disponibles):
+            self.selection_objet = max(0, len(self.objets_disponibles) - 1)
+    
+        # Si il n’y a plus rien → mode normal
+        if not self.objets_disponibles:
+            piece = self.piece_actuelle()
+            if piece:
+                piece.objets_ramasses = True
+            self.mode = "exploration"
+            #self.message = "Rien d'autre ici."
+        #else:
+            #self.message = f"Vous avez ramasser {obj.nom}."
+
+
 
     def _creer_objet_depuis_tag(self, tag):
         """Convertit un tag d'objet de pièce en véritable objet."""
@@ -332,66 +366,68 @@ class Board:
             return Nourriture("banane")
         if tag == "pelle":
             return creer_objet_depuis_nom("Pelle")
+        if tag == "des":
+            return creer_objet_depuis_nom("Des")
+        if tag == "kit de crochetage":
+            return creer_objet_depuis_nom("Kit de crochetage")
+        if tag == "detecteur":
+            return creer_objet_depuis_nom("Detecteur")
         # tags 'aleatoire' ou inconnus ne sont pas traités ici
         return None
 
     def ouvrir_magasin(self, automatique=False):
-        """Ouvre l'accès au magasin de la pièce actuelle si possible."""
         piece = self.piece_actuelle()
         if piece is None or not piece.commerce:
             self.message = "Pas de magasin ici."
             self.magasin_ouvert = False
             return
+    
         self.magasin_ouvert = True
         self.selection_magasin = 0
-        if automatique:
-            self.message = f"Magasin : {piece.nom}"
-        else:
-            self.message = f"Magasin : {piece.nom}"
+        
+        # On garde une liste des offres visibles
+        self.options_magasin_visibles = piece.commerce.copy()
+    
+        self.message = f"Magasin : {piece.nom}"
 
     def fermer_magasin(self):
         """Ferme l'interface magasin."""
         self.magasin_ouvert = False
 
     def changer_selection_magasin(self, direction):
-        if not self.magasin_ouvert:
+        if not self.magasin_ouvert or not self.options_magasin_visibles:
             return
-        piece = self.piece_actuelle()
-        if not piece or not piece.commerce:
-            return
-        if direction == "gauche":
-            self.selection_magasin = (self.selection_magasin - 1) % len(piece.commerce)
-        elif direction == "droite":
-            self.selection_magasin = (self.selection_magasin + 1) % len(piece.commerce)
+        if direction == "haut":
+            self.selection_magasin = (self.selection_magasin - 1) % len(self.options_magasin_visibles)
+        elif direction == "bas":
+            self.selection_magasin = (self.selection_magasin + 1) % len(self.options_magasin_visibles)
 
     def acheter_selection_magasin(self):
         if not self.magasin_ouvert:
             return
-        piece = self.piece_actuelle()
-        if not piece or not piece.commerce:
-            self.message = "Magasin vide."
-            return
-
-        offre = piece.commerce[self.selection_magasin]
+    
+        offre = self.options_magasin_visibles[self.selection_magasin]
         cout = offre.get("cout", 0)
+    
+        # Vérification de l'or
         if cout > 0 and not self.joueur.possede("Gold", cout):
-            self.message = "Pas assez d'or."
+            self.message = f"Il manque {cout} gold."
             return
-        if cout > 0 and not self.joueur.depenser("Gold", cout):
-            self.message = "Achat impossible."
-            return
-
+    
+        if cout > 0:
+            self.joueur.depenser("Gold", cout)
+    
         gain = offre.get("gain", {})
         if "ressource" in gain:
             obj = creer_objet_depuis_nom(gain["ressource"])
-            self.joueur.add_inv(obj, gain.get("quantite", 1))
-            self.message = f"Achat: {offre['nom']}"
+            quantite = gain.get("quantite", 1)
+            self.joueur.add_inv(obj, quantite)
+            self.message = f"Achat : +{quantite} {obj.nom}"
         else:
-            self.message = "Aucun gain défini."
+            self.message = "Aucun gain défini dans le magasin."
             
             
             
-
     def interagir(self):
         piece = self.piece_actuelle()
         if piece is None or not piece.interactions:
@@ -449,14 +485,38 @@ class Board:
         piece_choisie = self.tirage_en_cours[self.selection_tirage]
         ligne, colonne = self.case_cible
         
-        #on enleve d'abord de la pioche la piece
+        if piece_choisie.cout_gemmes == 0:
+            pass
+        
+        elif piece_choisie.cout_gemmes == 1:
+            if not self.joueur.possede("Gemmes", 1):
+                self.message = "Il manque 1 gemmes pour placer cette pièce."
+                return
+            self.joueur.depenser("Gemmes", 1)
+            
+        elif piece_choisie.cout_gemmes == 2:
+            if not self.joueur.possede("Gemmes", 2):
+                self.message = "Il manque 2 gemmes pour placer cette pièce."
+                return
+            self.joueur.depenser("Gemmes", 2)
+            
+        elif piece_choisie.cout_gemmes == 3:
+            if not self.joueur.possede("Gemmes",3):
+                self.message = "Il manque 2 gemmes pour placer cette pièce."
+                return
+            self.joueur.depenser("Gemmes", 3)
+        
+        
+        #on eleve d'abord de la pioche la piece
         if piece_choisie in self.pioche_initial:
             self.pioche_initial.remove(piece_choisie)
         #puis on cree une copie qu'on va placer
         piece_choisie_a_placer = copy.deepcopy(piece_choisie)
+        
             
         # Placement dans la grille
         self.grille[ligne][colonne] = piece_choisie_a_placer
+        piece_choisie_a_placer.tirer_niveaux_portes(ligne)
         self.enregistrer_piece(ligne, colonne)
     
         # ré-initialistion du tirage de toute les pieces, utile plus tard quand la pioche
@@ -469,30 +529,6 @@ class Board:
         self.case_cible = None
         self.direction_pour_placement = None
         print(f" Pièce '{piece_choisie.nom}' placée en ({ligne}, {colonne})")
-
-        # obj_recup=[]
-        # for obj in piece_choisie.objets:
-        #     if obj[1] =="rd":
-        #         nombre_obj= random.randint(1,9)
-        #     else:
-        #         nombre_obj=obj[1]
-            
-        #     if obj[0] == "aleatoire":
-        #         for i in range(nombre_obj):
-        #             obj_aleatoire=genere_obj(joueur)
-        #             joueur.ramasser_objet(obj_aleatoire)
-        #         obj_recup.append(obj_aleatoire.nom)
-
-        #     else:
-        #         if obj[0]=="pomme":
-        #             joueur.ramasser_objet(Nourriture(obj[0]))
-        #         else:
-        #             joueur.add_inv(Objets(obj[0]),nombre_obj)
-        #         obj_recup.append(obj[0])
-
-        # if len(obj_recup)>0:
-        #     self.message = "Objets récupérés : " + ", ".join(obj_recup)
-
     
         # Retour au mode exploration
         self.mode = "exploration"
@@ -508,6 +544,19 @@ class Board:
         self.direction_pour_placement = None
         self.mode = "exploration"
         self.message = "Choix de pièce annulé."
+        
+    def _normaliser_effet(self, effet):
+        if effet is None:
+            return None
+        if isinstance(effet, dict):
+            return effet
+        if isinstance(effet, str):
+            if effet == "pas":
+                return {"type": "enter_resource", "ressource": "Pas", "quantite": 3}
+            if "gemmes" in effet:
+                return {"type": "set_resource_min", "ressource": "Gemmes", "valeur": 2,
+                        "message": "Les gemmes sont réinitialisées à 2"}
+        return None
 
     def orienter_piece_selon_direction(self, piece):
         """
@@ -567,22 +616,99 @@ class Board:
             elif self.direction_pour_placement == "bas":
                 piece.tourner_la_piece("horaire")
                 piece.tourner_la_piece("horaire")
-            
-            
-            
+        
+        if portes["bas"] and portes["droite"] and portes["gauche"] and not (portes["haut"] ):
+    
+            if self.direction_pour_placement == "haut":
+                pass
+                
+            elif self.direction_pour_placement == "droite":
+                piece.tourner_la_piece("horaire")
+                
+            elif self.direction_pour_placement == "gauche":
+                piece.tourner_la_piece("antihoraire")
+                
+            elif self.direction_pour_placement == "bas":
+                piece.tourner_la_piece("horaire")
+                #piece.tourner_la_piece("horaire")
             
                     
-            
-                
-    def _normaliser_effet(self, effet):
-        if effet is None:
-            return None
-        if isinstance(effet, dict):
-            return effet
-        if isinstance(effet, str):
-            if effet == "pas":
-                return {"type": "enter_resource", "ressource": "Pas", "quantite": 3}
-            if "gemmes" in effet:
-                return {"type": "set_resource_min", "ressource": "Gemmes", "valeur": 2,
-                        "message": "Les gemmes sont réinitialisées à 2"}
-        return None
+    def confirmer_ouverture_porte(self, accepter):
+        if self.mode != "porte":
+            return
+        
+        # Refus joueur
+        if not accepter:
+            self.message = "Porte laissée fermée."
+            self.mode = "exploration"
+            return
+        
+    
+        piece = self.piece_actuelle()
+        niveau = piece.niveaux_portes[self.direction]
+    
+    
+        # Tentative de crochetage possible (uniquement N1)
+        if niveau == 1 and self.joueur.possede("Kit de crochetage", 1):
+            if random.random() <= self.chance_crochetage:
+                piece.niveaux_portes[self.direction] = 0
+                self.message = "Tu crochettes la porte avec succès !"
+            else:
+                self.message = "Échec du crochetage..."
+            self.mode = "exploration"
+            return
+        
+        
+        elif niveau == 1 and  not self.joueur.possede("Kit de crochetage", 1):
+    
+            self.joueur.depenser("Cle", 1)
+            piece.niveaux_portes[self.direction] = 0
+        
+            self.message = "Porte ouverte !"
+            self.mode = "exploration"
+            return
+        elif niveau == 2 and self.joueur.possede("Kit de crochetage", 1) and not self.joueur.possede("Cle", 1):
+        
+            self.message = "Le kit de crochetage ne marche pas pour un porte verouillée à double tour"
+            self.mode = "exploration"
+            return
+        
+
+        elif not self.joueur.possede("Cle", 1):
+            self.message = "Pas assez de clés."
+            self.mode = "exploration"
+            return
+        
+        else:
+            self.joueur.depenser("Cle", 1)
+            piece.niveaux_portes[self.direction] = 0
+        
+            self.message = "Porte ouverte !"
+            self.mode = "exploration"
+            return
+
+
+    def relancer_tirage(self):
+        """Ré-effectue un tirage si le joueur a au moins 1 dé."""
+        
+        # Vérifier si on est bien dans le mode tirage
+        if self.mode != "choix_piece":
+            self.message = "Tu ne peux pas relancer maintenant."
+            return
+    
+        # Vérifier si le joueur a des dés
+        if not self.joueur.possede("Des", 1):
+            self.message = "Aucun dé disponible."
+            return
+        
+        # Consommer un dé
+        self.joueur.depenser("Des", 1)
+        
+        # Refaire un tirage de 3 nouvelles pièces
+        self.tirer_pieces_possibles()
+        self.message = "Relance du tirage "
+        
+
+        
+
+    

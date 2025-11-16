@@ -112,7 +112,6 @@ class Game:
         texte_inventaire = texte_inventaire.render("Inventaire :", True, (0, 0, 0))
         self.screen.blit(texte_inventaire, (450, 50))
         
-
         ressources = [
             ("assets/Inventaire/Steps1.png", "Pas", 80),
             ("assets/Inventaire/Gold.png", "Gold", 120),
@@ -124,51 +123,21 @@ class Game:
         for chemin, nom, pos_y in ressources:
             img = pygame.image.load(chemin).convert_alpha()
             img = pygame.transform.scale(img, (25, 25))
-            self.screen.blit(img, (1200, pos_y))
+            self.screen.blit(img, (1240, pos_y))
             quantite = self.joueur.get_quantite(nom)
             texte_qte = font_valeur.render(str(quantite), True, (0, 0, 0))
-            self.screen.blit(texte_qte, (1250, pos_y + 5))
-# =======
-#         img_pas = pygame.image.load("assets/Inventaire/Steps1.png").convert()
-#         img_pas = pygame.transform.scale(img_pas, (25,25))
-#         self.screen.blit(img_pas, ( 1200, 80))
+            self.screen.blit(texte_qte, (1200, pos_y))
+            
+        objets_speciaux = ["Pelle", "Marteau", "Detecteur de métal", "Patte", "Kit de crochetage"]
 
-#         texte_pas = pygame.font.Font(None, 30)
-#         texte_pas = texte_pas.render(f"{self.joueur.inventaire["Pas"]["nombre"]}", True, (0, 0, 0))
-#         self.screen.blit(texte_pas, (1240, 80))
+        font_item = pygame.font.Font(None, 26)
         
-#         img_gold = pygame.image.load("assets/Inventaire/Gold.png")
-#         img_gold = pygame.transform.scale(img_gold, (25,25))
-#         self.screen.blit(img_gold, ( 1200, 120))
-
-#         texte_gold = pygame.font.Font(None, 30)
-#         texte_gold = texte_gold.render(f"{self.joueur.inventaire["or"]["nombre"]}", True, (0, 0, 0))
-#         self.screen.blit(texte_gold, (1240, 120))
-        
-#         img_gem = pygame.image.load("assets/Inventaire/Gem.png")
-#         img_gem = pygame.transform.scale(img_gem, (25,25))
-#         self.screen.blit(img_gem, ( 1200, 160))
-
-#         texte_gem = pygame.font.Font(None, 30)
-#         texte_gem = texte_gem.render(f"{self.joueur.inventaire["gemme"]["nombre"]}", True, (0, 0, 0))
-#         self.screen.blit(texte_gem, (1240, 160))
-        
-#         img_key = pygame.image.load("assets/Inventaire/Key.png")
-#         img_key = pygame.transform.scale(img_key, (25,25))
-#         self.screen.blit(img_key, ( 1200, 200))
-
-#         texte_key = pygame.font.Font(None, 30)
-#         texte_key = texte_key.render(f"{self.joueur.inventaire["cle"]["nombre"]}", True, (0, 0, 0))
-#         self.screen.blit(texte_key, (1240, 200))
-        
-#         img_dice = pygame.image.load("assets/Inventaire/Ivory_dice.png").convert()
-#         img_dice = pygame.transform.scale(img_dice, (25,25))
-#         self.screen.blit(img_dice, ( 1200, 240))
-
-#         texte_dice = pygame.font.Font(None, 30)
-#         texte_dice = texte_dice.render(f"{self.joueur.inventaire["des"]["nombre"]}", True, (0, 0, 0))
-#         self.screen.blit(texte_dice, (1240, 240))
-# >>>>>>> main
+        y_item = 80
+        for nom in objets_speciaux:
+            if self.joueur.get_quantite(nom) > 0:  # Le joueur possède cet objet
+                texte_item = font_item.render(f"{nom}", True, (0, 0, 0))
+                self.screen.blit(texte_item, (450, y_item))
+                y_item += 35
  
         if self.board.message:
             font_message = pygame.font.Font(None, 30)  
@@ -176,7 +145,7 @@ class Game:
             self.screen.blit(texte_message, (450, 680))
         elif piece_actuelle and piece_actuelle.commerce:
             font_message = pygame.font.Font(None, 28)
-            texte_message = font_message.render("Appuie sur M pour ouvrir le magasin.", True, (0, 0, 0))
+            texte_message = font_message.render("Appuie sur M pour ouvrir ou fermer le magasin.", True, (0, 0, 0))
             self.screen.blit(texte_message, (450, 680))
                 
         
@@ -184,7 +153,17 @@ class Game:
         if self.board.tirage_en_cours:
             font_choix = pygame.font.Font(None, 30)  
             texte_choix = font_choix.render("Choisie une pièce à placer", True, (0, 0, 0))  
-            self.screen.blit(texte_choix, (450, 375))  
+            self.screen.blit(texte_choix, (450, 375))
+            
+            lignes = [
+                      "ENTER = Placer",
+                      #"ESC = Annuler",
+                      "R = Relancer" 
+                      ]
+            for i, ligne in enumerate(lignes):
+                texte = font_choix.render(ligne, True, (0, 0, 0))
+                self.screen.blit(texte, (1100, 375 + i * 30))
+                
             
             y_img = 425
             for i, room in enumerate(self.board.tirage_en_cours):
@@ -203,6 +182,14 @@ class Game:
                     font = pygame.font.Font(None, 24)
                     text = font.render(room.nom, True, (0, 0, 0))
                     self.screen.blit(text, (x_img, y_img + 135))
+                    
+                    cout = room.cout_gemmes
+                    if cout > 0:
+                        img_gemme = pygame.image.load("assets/Inventaire/Gem.png").convert_alpha()
+                        img_gemme = pygame.transform.scale(img_gemme, (25, 25))
+                    
+                        for j in range(cout):
+                            self.screen.blit(img_gemme, (x_img  + j * 32, y_img + 160))
                     
 
         if self.board.magasin_ouvert:
@@ -230,7 +217,40 @@ class Game:
             texte_inter = font_inter.render("Appuie sur E pour interagir avec la pièce.", True, (0, 0, 0))
             self.screen.blit(texte_inter, (450, 720))
 
+         # Affichage des objets au sol si en mode choix_objet
+        if self.board.mode == "choix_objet" and piece_actuelle:
+            
+
+            nom_piece_actuelle = pygame.font.Font(None, 30)
+            nom_piece_actuelle = nom_piece_actuelle.render(piece_actuelle.nom, True, (0, 0, 0))
+            self.screen.blit(nom_piece_actuelle, (450, 375))
+             
+            font = pygame.font.Font(None, 28)
+            y = 400
+            for i, obj in enumerate(self.board.objets_disponibles):
+                couleur = (255, 0, 0) if i == self.board.selection_objet else (0, 0, 0)
+                
+                texte = font.render( f"Prendre {obj.nom}", True, couleur)
+                self.screen.blit(texte, (450, y))
+                y += 20
+                
+        if self.board.magasin_ouvert:
+            piece = self.board.piece_actuelle()
+            offres = self.board.options_magasin_visibles
+            font = pygame.font.Font(None, 28)
         
+            y = 420
+            for i, offre in enumerate(offres):
+                prix = offre.get("cout", 0)
+                nom = offre.get("nom", "???")
+                texte = f"{nom} - {prix} Gold"
+        
+                if i == self.board.selection_magasin:
+                    texte = "> " + texte
+        
+                render = font.render(texte, True, (0,0,0))
+                self.screen.blit(render, (475, y))
+                y += 30
     
 
     def run(self):
@@ -239,25 +259,34 @@ class Game:
         C'est ici que l'on regarde dans quelle mode on est. 
         """
         running = True
+        fin_de_partie = False
         
         while running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
-        
+                    
+                
+  
+                if self.board.magasin_ouvert:
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_UP:
+                            self.board.changer_selection_magasin("haut")
+                        elif event.key == pygame.K_DOWN:
+                            self.board.changer_selection_magasin("bas")
+                        elif event.key == pygame.K_RETURN:
+                            self.board.acheter_selection_magasin()
+                        elif event.key == pygame.K_m:
+                            self.board.fermer_magasin()
+                    continue
                 
                 if self.board.mode == "exploration":
                     if event.type == pygame.KEYDOWN:
-                        if self.board.magasin_ouvert:
-                            if event.key == pygame.K_LEFT:
-                                self.board.changer_selection_magasin("gauche")
-                            elif event.key == pygame.K_RIGHT:
-                                self.board.changer_selection_magasin("droite")
-                            elif event.key == pygame.K_RETURN:
-                                self.board.acheter_selection_magasin()
-                            elif event.key in (pygame.K_ESCAPE, pygame.K_m):
-                                self.board.fermer_magasin()
-                            continue
+                        if fin_de_partie:
+                            if event.key == pygame.K_ESCAPE:
+                                running = False  # permettre de quitter
+                            continue  # bloquer tout le gameplay
+                            
 
                         if event.key == pygame.K_z:
                             self.board.selectionner_direction("haut")
@@ -272,21 +301,17 @@ class Game:
                             self.board.selectionner_direction("droite")
                             self.direction_ui = "droite"
         
-                        # elif event.key == pygame.K_SPACE:
-                        #     self.board.ouvrir_porte()
-                            #en commentaire pour l'instant j'utilise pas se deplacer
-                            #self.board.se_deplacer(self.joueur)
                         elif event.key == pygame.K_SPACE:
-
                             self.board.se_deplacer()
+                            
                         elif event.key == pygame.K_m:
-                            if self.board.magasin_ouvert:
-                                self.board.fermer_magasin()
-                            else:
-                                self.board.ouvrir_magasin()
+                            self.board.ouvrir_magasin()
+                            continue
+
+                    
+
                         elif event.key == pygame.K_e:
                             self.board.interagir()
-
                             
         
                 
@@ -297,22 +322,51 @@ class Game:
                         elif event.key == pygame.K_RIGHT:
                             self.board.changer_selection_tirage("droite")
                         elif event.key == pygame.K_RETURN:  
-
                             self.board.placer_piece_choisie()
-                        elif event.key == pygame.K_ESCAPE:
-                            self.board.annuler_tirage()
-
+                        elif event.key == pygame.K_r:  # R comme Relancer
+                            self.board.relancer_tirage()
+                        # elif event.key == pygame.K_ESCAPE:
+                        #     self.board.annuler_tirage()
+                        
+                            
+                            
+                elif self.board.mode == "choix_objet":
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_UP:
+                            self.board.choisir_objet("haut")
+                        elif event.key == pygame.K_DOWN:
+                            self.board.choisir_objet("bas")
+                        elif event.key == pygame.K_RETURN:
+                            self.board.ramasser_objet_selectionne()
                               
                     
+                elif self.board.mode == "porte":
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_RETURN:
+                            self.board.confirmer_ouverture_porte(True)
+                        elif event.key == pygame.K_ESCAPE:
+                            self.board.confirmer_ouverture_porte(False)
+                        
+                            
+                        
 
-
-
+            
+            # 1) Plus de pas → Game Over
+            if self.joueur.get_quantite("Pas") <= 0 and not fin_de_partie:
+                fin_de_partie = True
+                self.board.message = "Plus de pas va falloir dormir mec"
+            
+            # 2) Arrivée en Antechambre → Victoire
+            if (self.board.ligne_joueur == self.board.ligne_antechambert and
+                self.board.colonne_joueur == self.board.colonne_antechambert and
+                not fin_de_partie):
+                fin_de_partie = True
+                self.board.message = "Objectif Antechamber atteint"
 
             self.Partie_Salle()
             self.Partie_Inventaire()
             pygame.display.flip()
-            if self.joueur.inventaire["Pas"]==0:
-                running = False
             self.clock.tick(30)
 
         pygame.quit()
+        
